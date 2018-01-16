@@ -7,17 +7,15 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/mikkeloscar/aur"
 	"github.com/mikkeloscar/gopkgbuild"
 	"github.com/mmcdole/gofeed"
 )
 
-func githubVersion(url string) (*pkgbuild.CompleteVersion, error) {
-	match := regexp.MustCompile("github.com/([^/#.]+)/([^/#.]+)").FindSubmatch([]byte(url))
-	if match == nil {
-		match = regexp.MustCompile("([^/#.]+).github.io/([^/#.]+)").FindSubmatch([]byte(url))
-	}
+func githubVersion(url string, re *regexp.Regexp) (*pkgbuild.CompleteVersion, error) {
+	match := re.FindSubmatch([]byte(url))
 	if match == nil {
 		return nil, fmt.Errorf("No GitHub release found for %s", url)
 	}
@@ -37,6 +35,17 @@ func githubVersion(url string) (*pkgbuild.CompleteVersion, error) {
 	return pkgbuild.NewCompleteVersion(version)
 }
 
+func obtainVersionForURL(url string) (*pkgbuild.CompleteVersion, error) {
+	switch {
+	case strings.Contains(url, "github.com"):
+		return githubVersion(url, regexp.MustCompile("github.com/([^/#.]+)/([^/#.]+)"))
+	case strings.Contains(url, ("github.io")):
+		return githubVersion(url, regexp.MustCompile("([^/#.]+).github.io/([^/#.]+)"))
+	default:
+		return nil, fmt.Errorf("No release found for %s", url)
+	}
+}
+
 func fetchPkgbuild(pkg *aur.Pkg) (*pkgbuild.PKGBUILD, error) {
 	resp, err := http.Get("https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=" + pkg.Name)
 	if err != nil {
@@ -51,16 +60,16 @@ func fetchPkgbuild(pkg *aur.Pkg) (*pkgbuild.PKGBUILD, error) {
 }
 
 func obtainVersion(pkg *aur.Pkg) (*pkgbuild.CompleteVersion, error) {
-	gitVersion, err := githubVersion(pkg.URL)
+	version, err := obtainVersionForURL(pkg.URL)
 	if err == nil {
-		return gitVersion, nil
+		return version, nil
 	}
 	pkgbuild, err := fetchPkgbuild(pkg)
 	if err != nil {
 		return nil, err
 	}
 	if len(pkgbuild.Source) > 0 {
-		return githubVersion(pkgbuild.Source[0])
+		return obtainVersionForURL(pkgbuild.Source[0])
 	}
 	return nil, fmt.Errorf("No release found for %s: %v", pkg.Name, err)
 }
