@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"regexp"
 
@@ -35,6 +37,34 @@ func githubVersion(url string) (*pkgbuild.CompleteVersion, error) {
 	return pkgbuild.NewCompleteVersion(version)
 }
 
+func fetchPkgbuild(pkg *aur.Pkg) (*pkgbuild.PKGBUILD, error) {
+	resp, err := http.Get("https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=" + pkg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	pkgbuildBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return pkgbuild.ParseSRCINFOContent(pkgbuildBytes)
+}
+
+func obtainVersion(pkg *aur.Pkg) (*pkgbuild.CompleteVersion, error) {
+	gitVersion, err := githubVersion(pkg.URL)
+	if err == nil {
+		return gitVersion, nil
+	}
+	pkgbuild, err := fetchPkgbuild(pkg)
+	if err != nil {
+		return nil, err
+	}
+	if len(pkgbuild.Source) > 0 {
+		return githubVersion(pkgbuild.Source[0])
+	}
+	return nil, fmt.Errorf("No release found for %s: %v", pkg.Name, err)
+}
+
 func handlePackage(pkg *aur.Pkg) error {
 
 	pkgVersion, err := pkgbuild.NewCompleteVersion(pkg.Version)
@@ -42,7 +72,7 @@ func handlePackage(pkg *aur.Pkg) error {
 		return err
 	}
 
-	gitVersion, err := githubVersion(pkg.URL)
+	gitVersion, err := obtainVersion(pkg)
 	if err != nil {
 		return err
 	}
