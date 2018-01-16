@@ -51,5 +51,10 @@ func main() {
 	user := flag.String("user", "", "AUR username")
 	token := flag.String("token", "", "GitHub personal access token")
 	flag.Parse()
+	if *user == "" {
+		fmt.Fprintln(os.Stderr, "-user is required")
+		flag.Usage()
+		os.Exit(1)
+	}
 	handlePackageForMaintainer(*user, newGitHubClient(*token))
 }
