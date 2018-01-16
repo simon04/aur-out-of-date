@@ -79,7 +79,9 @@ func handlePackage(pkg *aur.Pkg) error {
 	// workaround for https://github.com/mikkeloscar/gopkgbuild/pull/8
 	version := fmt.Sprintf("%d:%s-%s", pkgVersion.Epoch, gitVersion.Version, pkgVersion.Pkgrel)
 
-	fmt.Println(pkg.Name, pkg.URL, pkgVersion, gitVersion, pkgVersion.Older(version))
+	if pkgVersion.Older(version) {
+		fmt.Printf("Package %s should be updated from %v-%v to %v-%v\n", pkg.Name, pkgVersion.Version, pkgVersion.Pkgrel, gitVersion.Version, gitVersion.Pkgrel)
+	}
 	return nil
 }
 
