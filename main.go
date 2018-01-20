@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/mikkeloscar/aur"
@@ -75,11 +76,18 @@ func handlePackage(pkg *aur.Pkg) {
 	}
 }
 
+type byName []aur.Pkg
+
+func (a byName) Len() int           { return len(a) }
+func (a byName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a byName) Less(i, j int) bool { return strings.Compare(a[i].Name, a[j].Name) == -1 }
+
 func handlePackageForMaintainer(maintainer string) {
 	packages, err := aur.SearchByMaintainer(maintainer)
 	if err != nil {
 		panic(err)
 	}
+	sort.Sort(byName(packages))
 	for _, pkg := range packages {
 		handlePackage(&pkg)
 	}
