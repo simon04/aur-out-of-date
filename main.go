@@ -76,14 +76,14 @@ func handlePackage(pkg *aur.Pkg) {
 	}
 }
 
+// byName is used for sorting packages by their name
 type byName []aur.Pkg
 
 func (a byName) Len() int           { return len(a) }
 func (a byName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byName) Less(i, j int) bool { return strings.Compare(a[i].Name, a[j].Name) == -1 }
 
-func handlePackageForMaintainer(maintainer string) {
-	packages, err := aur.SearchByMaintainer(maintainer)
+func handlePackages(packages []aur.Pkg, err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -93,13 +93,29 @@ func handlePackageForMaintainer(maintainer string) {
 	}
 }
 
+// stringSlice is used for parsing multi-value string flags
+type stringSlice []string
+
+func (i *stringSlice) String() string {
+	return strings.Join(*i, " ")
+}
+func (i *stringSlice) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
+
 func main() {
+	var packages stringSlice
+	flag.Var(&packages, "pkg", "AUR package name(s)")
 	user := flag.String("user", "", "AUR username")
 	flag.Parse()
-	if *user == "" {
+	if *user != "" {
+		handlePackages(aur.SearchByMaintainer(*user))
+	} else if len(packages) > 0 {
+		handlePackages(aur.Info(packages))
+	} else {
 		fmt.Fprintln(os.Stderr, "-user is required")
 		flag.Usage()
 		os.Exit(1)
 	}
-	handlePackageForMaintainer(*user)
 }

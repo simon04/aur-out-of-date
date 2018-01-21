@@ -13,6 +13,8 @@ $ aur-out-of-date -user simon04
 Package python-mwclient should be updated from 0.8.6-1 to 0.8.7-1
 Package python2-mwclient should be updated from 0.8.6-1 to 0.8.7-1
 Package nodejs-osmtogeojson should be updated from 2.2.12-1 to 3.0.0-beta.3
+
+$ aur-out-of-date -pkg caddy -pkg qgis
 ```
 
 Principle
