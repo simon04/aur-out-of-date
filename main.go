@@ -66,12 +66,12 @@ func handlePackage(pkg *aur.Pkg) {
 		fmt.Printf("\x1b[37m[UNKNOWN]     [%s] %v \x1b[0m\n", pkg.Name, err)
 		return
 	}
-	// workaround for https://github.com/mikkeloscar/gopkgbuild/pull/8
-	version := fmt.Sprintf("%d:%s-%s", pkgVersion.Epoch, gitVersion.Version, pkgVersion.Pkgrel)
+	gitVersion.Epoch = pkgVersion.Epoch
+	gitVersion.Pkgrel = pkgVersion.Pkgrel
 
 	if pkg.OutOfDate > 0 {
 		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s has been flagged out-of-date and should be updated from %v-%v to %v \x1b[0m\n", pkg.Name, pkg.Name, pkgVersion.Version, pkgVersion.Pkgrel, gitVersion.Version)
-	} else if pkgVersion.Older(version) {
+	} else if pkgVersion.Older(gitVersion.String()) {
 		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s should be updated from %v-%v to %v \x1b[0m\n", pkg.Name, pkg.Name, pkgVersion.Version, pkgVersion.Pkgrel, gitVersion.Version)
 	} else {
 		fmt.Printf("\x1b[32m[UP-TO-DATE]  [%s] Package %s %v-%v matches upstream version %v \x1b[0m\n", pkg.Name, pkg.Name, pkgVersion.Version, pkgVersion.Pkgrel, gitVersion.Version)
