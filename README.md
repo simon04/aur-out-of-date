@@ -33,6 +33,7 @@ Principle
 For each package, the upstream URL and/or source URL is matched against supported platforms. For those platforms the latest release is obtained via an API/HTTP call.
 
 * `github.com` or `github.io` → https://github.com/…/…/releases.atom
+* `registry.npmjs.org` → https://registry.npmjs.org/-/package/…/dist-tags
 
 License
 -------

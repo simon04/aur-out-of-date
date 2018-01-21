@@ -18,8 +18,10 @@ func obtainVersionForURL(url string) (*pkgbuild.CompleteVersion, error) {
 	switch {
 	case strings.Contains(url, "github.com"):
 		return githubVersion(url, regexp.MustCompile("github.com/([^/#.]+)/([^/#.]+)"))
-	case strings.Contains(url, ("github.io")):
+	case strings.Contains(url, "github.io"):
 		return githubVersion(url, regexp.MustCompile("([^/#.]+).github.io/([^/#.]+)"))
+	case strings.Contains(url, "registry.npmjs.org"):
+		return npmVersion(url, regexp.MustCompile("registry.npmjs.org/([^/#.]+)/"))
 	default:
 		return nil, fmt.Errorf("No release found for %s", url)
 	}
