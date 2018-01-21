@@ -4,9 +4,7 @@ aur-out-of-date
 Iterates through a user's AUR (Arch User Repository) packages, and determines out-of-date packages w.r.t. their upstream version:
 
 ```sh
-$ go get github.com/mikkeloscar/aur
-$ go get github.com/mikkeloscar/gopkgbuild
-$ go get github.com/mmcdole/gofeed
+$ dep ensure
 $ go get github.com/simon04/aur-out-of-date
 
 $ aur-out-of-date -user simon04
