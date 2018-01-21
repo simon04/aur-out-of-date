@@ -34,6 +34,7 @@ For each package, the upstream URL and/or source URL is matched against supporte
 
 * `github.com` or `github.io` → https://github.com/…/…/releases.atom
 * `registry.npmjs.org` → https://registry.npmjs.org/-/package/…/dist-tags
+* `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
 
 License
 -------

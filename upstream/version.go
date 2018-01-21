@@ -19,6 +19,10 @@ func forURL(url string) (*pkgbuild.CompleteVersion, error) {
 		return githubVersion(url, regexp.MustCompile("([^/#.]+).github.io/([^/#.]+)"))
 	case strings.Contains(url, "registry.npmjs.org"):
 		return npmVersion(url, regexp.MustCompile("registry.npmjs.org/([^/#.]+)/"))
+	case strings.Contains(url, "pypi.python.org"):
+		return pythonVersion(url, regexp.MustCompile("pypi.python.org/packages/source/[^/#.]+/([^/#.]+)/"))
+	case strings.Contains(url, "files.pythonhosted.org"):
+		return pythonVersion(url, regexp.MustCompile("files.pythonhosted.org/packages/source/[^/#.]+/([^/#.]+)/"))
 	default:
 		return nil, fmt.Errorf("No release found for %s", url)
 	}
