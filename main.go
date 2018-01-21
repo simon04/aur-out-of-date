@@ -75,7 +75,7 @@ func main() {
 	} else if len(packages) > 0 {
 		handlePackages(aur.Info(packages))
 	} else {
-		fmt.Fprintln(os.Stderr, "-user is required")
+		fmt.Fprintln(os.Stderr, "Either -user or -pkg is required!")
 		flag.Usage()
 		os.Exit(1)
 	}
