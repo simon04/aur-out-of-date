@@ -23,6 +23,10 @@ func forURL(url string) (*pkgbuild.CompleteVersion, error) {
 		return pythonVersion(url, regexp.MustCompile("pypi.python.org/packages/source/[^/#.]+/([^/#.]+)/"))
 	case strings.Contains(url, "files.pythonhosted.org"):
 		return pythonVersion(url, regexp.MustCompile("files.pythonhosted.org/packages/source/[^/#.]+/([^/#.]+)/"))
+	case strings.Contains(url, "search.cpan.org"):
+		fallthrough
+	case strings.Contains(url, "search.mcpan.org"):
+		return perlVersion(url, regexp.MustCompile("/([^/#.]+?)-v?([0-9.-]+)\\.(tgz|tar.gz)$"))
 	default:
 		return nil, fmt.Errorf("No release found for %s", url)
 	}
