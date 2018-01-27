@@ -21,6 +21,9 @@ $ aur-out-of-date -user simon04
 [OUT-OF-DATE] [nodejs-osmtogeojson] Package nodejs-osmtogeojson should be updated from 2.2.12-1 to 3.0.0
 [OUT-OF-DATE] [spectre-meltdown-checker] Package spectre-meltdown-checker should be updated from 0.31-1 to 0.32
 
+$ aur-out-of-date -user simon04 -devel
+[UP-TO-DATE]  [ocproxy-git] Package ocproxy-git 1.60.r8.g8f15425-3 matches upstream version 1.60
+
 $ aur-out-of-date -pkg caddy -pkg dep -pkg aur-out-of-date
 [UP-TO-DATE]  [aur-out-of-date] Package aur-out-of-date 0.4.0-1 matches upstream version 0.4.0
 [UP-TO-DATE]  [caddy] Package caddy 0.10.10-3 matches upstream version 0.10.10

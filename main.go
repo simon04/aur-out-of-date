@@ -44,13 +44,16 @@ func (a byName) Len() int           { return len(a) }
 func (a byName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byName) Less(i, j int) bool { return strings.Compare(a[i].Name, a[j].Name) == -1 }
 
-func handlePackages(packages []aur.Pkg, err error) {
+func handlePackages(vcsPackages bool, packages []aur.Pkg, err error) {
 	if err != nil {
 		panic(err)
 	}
 	sort.Sort(byName(packages))
 	for _, pkg := range packages {
-		handlePackage(&pkg)
+		isVcsPackage := strings.HasSuffix(pkg.Name, "-git") || strings.HasSuffix(pkg.Name, "-hg") || strings.HasSuffix(pkg.Name, "-svn")
+		if vcsPackages == isVcsPackage {
+			handlePackage(&pkg)
+		}
 	}
 }
 
@@ -69,11 +72,15 @@ func main() {
 	var packages stringSlice
 	flag.Var(&packages, "pkg", "AUR package name(s)")
 	user := flag.String("user", "", "AUR username")
+	vcsPackages := flag.Bool("devel", false, "Check -git/-svn/-hg packages")
 	flag.Parse()
 	if *user != "" {
-		handlePackages(aur.SearchByMaintainer(*user))
+		packages, err := aur.SearchByMaintainer(*user)
+		handlePackages(*vcsPackages, packages, err)
 	} else if len(packages) > 0 {
-		handlePackages(aur.Info(packages))
+		packages, err := aur.Info(packages)
+		handlePackages(false, packages, err)
+		handlePackages(true, packages, err)
 	} else {
 		fmt.Fprintln(os.Stderr, "Either -user or -pkg is required!")
 		flag.Usage()
