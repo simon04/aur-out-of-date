@@ -2,13 +2,11 @@ package upstream
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"regexp"
 	"strings"
 
-	"github.com/mikkeloscar/aur"
 	pkgbuild "github.com/mikkeloscar/gopkgbuild"
+	"github.com/simon04/aur-out-of-date/pkg"
 )
 
 func forURL(url string) (*pkgbuild.CompleteVersion, error) {
@@ -32,31 +30,18 @@ func forURL(url string) (*pkgbuild.CompleteVersion, error) {
 	}
 }
 
-func fetchPkgbuild(pkg *aur.Pkg) (*pkgbuild.PKGBUILD, error) {
-	resp, err := http.Get("https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=" + pkg.Name)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	pkgbuildBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return pkgbuild.ParseSRCINFOContent(pkgbuildBytes)
-}
-
 // VersionForPkg determines the upstream version for the given package
-func VersionForPkg(pkg *aur.Pkg) (*pkgbuild.CompleteVersion, error) {
-	version, err := forURL(pkg.URL)
+func VersionForPkg(pkg pkg.Pkg) (*pkgbuild.CompleteVersion, error) {
+	version, err := forURL(pkg.URL())
 	if err == nil {
 		return version, nil
 	}
-	pkgbuild, err := fetchPkgbuild(pkg)
+	sources, err := pkg.Sources()
 	if err != nil {
 		return nil, err
 	}
-	if len(pkgbuild.Source) > 0 {
-		return forURL(pkgbuild.Source[0])
+	if len(sources) > 0 {
+		return forURL(sources[0])
 	}
-	return nil, fmt.Errorf("No release found for %s: %v", pkg.Name, err)
+	return nil, fmt.Errorf("No release found for %s: %v", pkg.Name(), err)
 }
