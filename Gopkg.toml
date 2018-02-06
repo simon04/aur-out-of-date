@@ -28,3 +28,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/mikkeloscar/gopkgbuild"
+
+[[constraint]]
+  name = "github.com/go-errors/errors"
+  version = "1.0.0"

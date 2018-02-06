@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/go-errors/errors"
+  packages = ["."]
+  revision = "3afebba5a48dbc89b574d890b6b34d9ee10b4785"
+  version = "v1.0.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/mikkeloscar/aur"
   packages = ["."]
@@ -16,6 +22,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "00a0c37b903fea5bf4d7235614df7a00aaa2724e3bc9a0dcb60e4e8514b5371b"
+  inputs-digest = "8d83f6d85f5973c34911a69993e3e46785f8fa4f36c7aa93b73736ac63aa39a8"
   solver-name = "gps-cdcl"
   solver-version = 1

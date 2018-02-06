@@ -1,10 +1,10 @@
 package upstream
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
+	"github.com/go-errors/errors"
 	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 	"github.com/simon04/aur-out-of-date/pkg"
 )
@@ -26,7 +26,7 @@ func forURL(url string) (*pkgbuild.CompleteVersion, error) {
 	case strings.Contains(url, "search.mcpan.org"):
 		return perlVersion(url, regexp.MustCompile("/([^/#.]+?)-v?([0-9.-]+)\\.(tgz|tar.gz)$"))
 	default:
-		return nil, fmt.Errorf("No release found for %s", url)
+		return nil, errors.Errorf("No release found for %s", url)
 	}
 }
 
@@ -38,10 +38,10 @@ func VersionForPkg(pkg pkg.Pkg) (*pkgbuild.CompleteVersion, error) {
 	}
 	sources, err := pkg.Sources()
 	if err != nil {
-		return nil, err
+		return nil, errors.WrapPrefix(err, "Failed to obtain sources for "+pkg.Name(), 0)
 	}
 	if len(sources) > 0 {
 		return forURL(sources[0])
 	}
-	return nil, fmt.Errorf("No release found for %s: %v", pkg.Name(), err)
+	return nil, errors.WrapPrefix(err, "No release found for "+pkg.Name(), 0)
 }

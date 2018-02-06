@@ -1,10 +1,10 @@
 package pkg
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/go-errors/errors"
 	"github.com/mikkeloscar/aur"
 	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 )
@@ -47,16 +47,16 @@ func (p *remotePkg) URL() string {
 func (p *remotePkg) Sources() ([]string, error) {
 	resp, err := http.Get("https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=" + p.pkg.Name)
 	if err != nil {
-		return nil, err
+		return nil, errors.WrapPrefix(err, "Failed to fetch .SRCINFO for "+p.pkg.Name, 0)
 	}
 	defer resp.Body.Close()
 	pkgbuildBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, errors.WrapPrefix(err, "Failed to fetch .SRCINFO for "+p.pkg.Name, 0)
 	}
 	pkg, err := pkgbuild.ParseSRCINFOContent(pkgbuildBytes)
 	if err != nil {
-		return nil, err
+		return nil, errors.WrapPrefix(err, "Failed to parse .SRCINFO for "+p.pkg.Name, 0)
 	}
 	return pkg.Source, nil
 }
@@ -71,7 +71,7 @@ func NewLocalPkgs(paths []string) ([]Pkg, error) {
 	for _, path := range paths {
 		pkg, err := pkgbuild.ParseSRCINFO(path)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to parse %s: %v", path, err)
+			return nil, errors.WrapPrefix(err, "Failed to parse "+path, 0)
 		}
 		r = append(r, &localPkg{pkg})
 	}
