@@ -53,30 +53,23 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	}
 }
 
-// stringSlice is used for parsing multi-value string flags
-type stringSlice []string
-
-func (i *stringSlice) String() string {
-	return strings.Join(*i, " ")
-}
-func (i *stringSlice) Set(value string) error {
-	*i = append(*i, value)
-	return nil
-}
-
 func main() {
-	var packages stringSlice
-	flag.Var(&packages, "pkg", "AUR package name(s)")
+	remote := flag.Bool("pkg", false, "AUR package name(s)")
 	user := flag.String("user", "", "AUR username")
+	local := flag.Bool("local", false, "Local .SRCINFO files")
 	vcsPackages := flag.Bool("devel", false, "Check -git/-svn/-hg packages")
 	flag.Parse()
 	if *user != "" {
 		packages, err := aur.SearchByMaintainer(*user)
 		handlePackages(*vcsPackages, pkg.NewRemotePkgs(packages), err)
-	} else if len(packages) > 0 {
-		packages, err := aur.Info(packages)
+	} else if *remote {
+		packages, err := aur.Info(flag.Args())
 		handlePackages(false, pkg.NewRemotePkgs(packages), err)
 		handlePackages(true, pkg.NewRemotePkgs(packages), err)
+	} else if *local {
+		packages, err := pkg.NewLocalPkgs(flag.Args())
+		handlePackages(false, packages, err)
+		handlePackages(true, packages, err)
 	} else {
 		fmt.Fprintln(os.Stderr, "Either -user or -pkg is required!")
 		flag.Usage()

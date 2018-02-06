@@ -24,10 +24,12 @@ $ aur-out-of-date -user simon04
 $ aur-out-of-date -user simon04 -devel
 [UP-TO-DATE]  [ocproxy-git] Package ocproxy-git 1.60.r8.g8f15425-3 matches upstream version 1.60
 
-$ aur-out-of-date -pkg caddy -pkg dep -pkg aur-out-of-date
+$ aur-out-of-date -pkg caddy dep aur-out-of-date
 [UP-TO-DATE]  [aur-out-of-date] Package aur-out-of-date 0.4.0-1 matches upstream version 0.4.0
 [UP-TO-DATE]  [caddy] Package caddy 0.10.10-3 matches upstream version 0.10.10
 [UP-TO-DATE]  [dep] Package dep 0.3.2-2 matches upstream version 0.3.2
+
+$ aur-out-of-date -local packages/*/.SRCINFO
 ```
 
 Principle
