@@ -1,4 +1,5 @@
 .vscode/
+aur-out-of-date
 aur-out-of-date_*
 debug
 vendor/
