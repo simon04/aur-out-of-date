@@ -7,7 +7,6 @@ import (
 	"regexp"
 
 	"github.com/go-errors/errors"
-	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 )
 
 type pypiResponse struct {
@@ -18,14 +17,14 @@ type pypiInfo struct {
 	Version string `json:"version"`
 }
 
-func pythonVersion(url string, re *regexp.Regexp) (*pkgbuild.CompleteVersion, error) {
+func pythonVersion(url string, re *regexp.Regexp) (Version, error) {
 	match := re.FindSubmatch([]byte(url))
 	if match == nil {
-		return nil, errors.Errorf("No PyPI release found for %s", url)
+		return "", errors.Errorf("No PyPI release found for %s", url)
 	}
 	resp, err := http.Get(fmt.Sprintf("https://pypi.python.org/pypi/%s/json", match[1]))
 	if err != nil {
-		return nil, errors.WrapPrefix(err, "No PyPI release found for "+url, 0)
+		return "", errors.WrapPrefix(err, "No PyPI release found for "+url, 0)
 	}
 	defer resp.Body.Close()
 
@@ -33,7 +32,7 @@ func pythonVersion(url string, re *regexp.Regexp) (*pkgbuild.CompleteVersion, er
 	var pypi pypiResponse
 	err = dec.Decode(&pypi)
 	if err != nil || pypi.Info.Version == "" {
-		return nil, errors.WrapPrefix(err, "No PyPI release found for "+url, 0)
+		return "", errors.WrapPrefix(err, "No PyPI release found for "+url, 0)
 	}
-	return pkgbuild.NewCompleteVersion(pypi.Info.Version)
+	return Version(pypi.Info.Version), nil
 }

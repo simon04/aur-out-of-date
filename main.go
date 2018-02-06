@@ -21,15 +21,13 @@ func handlePackage(pkg pkg.Pkg) {
 		fmt.Printf("\x1b[37m[UNKNOWN]     [%s] %v \x1b[0m\n", pkg.Name(), err)
 		return
 	}
-	upstreamVersion.Epoch = 0
-	upstreamVersion.Pkgrel = ""
 
 	if pkg.OutOfDate() {
-		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s has been flagged out-of-date and should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion, pkgVersion.Pkgrel, upstreamVersion.Version)
-	} else if pkgVersion.Older(upstreamVersion.String()) {
-		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion, pkgVersion.Pkgrel, upstreamVersion.Version)
+		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s has been flagged out-of-date and should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+	} else if pkgVersion.Older(string(upstreamVersion)) {
+		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
 	} else {
-		fmt.Printf("\x1b[32m[UP-TO-DATE]  [%s] Package %s %v-%v matches upstream version %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion, pkgVersion.Pkgrel, upstreamVersion.Version)
+		fmt.Printf("\x1b[32m[UP-TO-DATE]  [%s] Package %s %v-%v matches upstream version %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
 	}
 }
 
