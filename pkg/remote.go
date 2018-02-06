@@ -36,7 +36,7 @@ func (p *remotePkg) URL() string {
 }
 
 func (p *remotePkg) Sources() ([]string, error) {
-	resp, err := http.Get("https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=" + p.pkg.Name)
+	resp, err := http.Get("https://aur.archlinux.org/cgit/aur.git/plain/.SRCINFO?h=" + p.pkg.PackageBase)
 	if err != nil {
 		return nil, errors.WrapPrefix(err, "Failed to fetch .SRCINFO for "+p.pkg.Name, 0)
 	}
