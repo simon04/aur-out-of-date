@@ -8,6 +8,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/h2non/gock"
+  packages = ["."]
+  revision = "26775f23aa9da4cbd47bc2600a57ac07bbf3bd20"
+  version = "v1.0.7"
+
+[[projects]]
   branch = "master"
   name = "github.com/mikkeloscar/aur"
   packages = ["."]
@@ -22,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8d83f6d85f5973c34911a69993e3e46785f8fa4f36c7aa93b73736ac63aa39a8"
+  inputs-digest = "85637407e9a2f0c84c2946415d3360e32bc9ad2fcc515ac5ccad2370e102a7ae"
   solver-name = "gps-cdcl"
   solver-version = 1

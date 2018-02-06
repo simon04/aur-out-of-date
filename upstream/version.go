@@ -19,6 +19,10 @@ func forURL(url string) (Version, error) {
 		return githubVersion(url, regexp.MustCompile("([^/#.]+).github.io/([^/#.]+)"))
 	case strings.Contains(url, "registry.npmjs.org"):
 		return npmVersion(url, regexp.MustCompile("registry.npmjs.org/([^/#.]+)/"))
+	case strings.Contains(url, "npmjs.com/package"):
+		return npmVersion(url, regexp.MustCompile("npmjs.com/package/([^/#.]+)"))
+	case strings.Contains(url, "npmjs.org/package"):
+		return npmVersion(url, regexp.MustCompile("npmjs.org/package/([^/#.]+)"))
 	case strings.Contains(url, "pypi.python.org"):
 		return pythonVersion(url, regexp.MustCompile("pypi.python.org/packages/source/[^/#.]+/([^/#.]+)/"))
 	case strings.Contains(url, "files.pythonhosted.org"):
@@ -26,6 +30,8 @@ func forURL(url string) (Version, error) {
 	case strings.Contains(url, "search.cpan.org"):
 		fallthrough
 	case strings.Contains(url, "search.mcpan.org"):
+		fallthrough
+	case strings.Contains(url, "cpan.metacpan.org"):
 		return perlVersion(url, regexp.MustCompile("/([^/#.]+?)-v?([0-9.-]+)\\.(tgz|tar.gz)$"))
 	default:
 		return "", errors.Errorf("No release found for %s", url)
