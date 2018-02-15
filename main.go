@@ -12,6 +12,13 @@ import (
 	"github.com/simon04/aur-out-of-date/upstream"
 )
 
+var statistics struct {
+	UpToDate         int
+	FlaggedOutOfDate int
+	OutOfDate        int
+	Unknown          int
+}
+
 func handlePackage(pkg pkg.Pkg) {
 
 	pkgVersion := pkg.Version()
@@ -19,15 +26,19 @@ func handlePackage(pkg pkg.Pkg) {
 	upstreamVersion, err := upstream.VersionForPkg(pkg)
 	if err != nil {
 		fmt.Printf("\x1b[37m[UNKNOWN]     [%s] %v \x1b[0m\n", pkg.Name(), err)
+		statistics.Unknown++
 		return
 	}
 
 	if pkg.OutOfDate() {
 		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s has been flagged out-of-date and should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		statistics.FlaggedOutOfDate++
 	} else if pkgVersion.Older(string(upstreamVersion)) {
 		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		statistics.OutOfDate++
 	} else {
 		fmt.Printf("\x1b[32m[UP-TO-DATE]  [%s] Package %s %v-%v matches upstream version %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		statistics.UpToDate++
 	}
 }
 
@@ -51,11 +62,21 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	}
 }
 
+func printStatistics() {
+	fmt.Println()
+	fmt.Println("[STATISTICS]")
+	fmt.Printf("\x1b[32m%12s: %4d \x1b[0m\n", "UP-TO-DATE", statistics.UpToDate)
+	fmt.Printf("\x1b[31m%12s: %4d \x1b[0m\n", "FLAGGED", statistics.FlaggedOutOfDate)
+	fmt.Printf("\x1b[31m%12s: %4d \x1b[0m\n", "OUT-OF-DATE", statistics.OutOfDate)
+	fmt.Printf("\x1b[37m%12s: %4d \x1b[0m\n", "UNKNOWN", statistics.Unknown)
+}
+
 func main() {
 	remote := flag.Bool("pkg", false, "AUR package name(s)")
 	user := flag.String("user", "", "AUR username")
 	local := flag.Bool("local", false, "Local .SRCINFO files")
 	vcsPackages := flag.Bool("devel", false, "Check -git/-svn/-hg packages")
+	stats := flag.Bool("statistics", false, "Print summary statistics")
 	flag.Parse()
 	if *user != "" {
 		packages, err := aur.SearchByMaintainer(*user)
@@ -72,5 +93,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Either -user or -pkg is required!")
 		flag.Usage()
 		os.Exit(1)
+	}
+	if *stats {
+		printStatistics()
 	}
 }
