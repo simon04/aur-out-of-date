@@ -37,8 +37,10 @@ func githubVersion(url string, re *regexp.Regexp) (Version, error) {
 	dec := xml.NewDecoder(resp.Body)
 	var feed atomFeed
 	err = dec.Decode(&feed)
-	if err != nil || len(feed.Items) == 0 {
+	if err != nil {
 		return "", errors.WrapPrefix(err, "No GitHub release found for "+url, 0)
+	} else if len(feed.Items) == 0 {
+		return "", errors.Errorf("No GitHub release found for %s", url)
 	}
 
 	link := regexp.MustCompile("/releases/tag/v?(.*)").FindSubmatch([]byte(feed.Items[0].Link.Href))
