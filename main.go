@@ -19,6 +19,14 @@ var statistics struct {
 	Unknown          int
 }
 
+var commandline struct {
+	user            string
+	remote          bool
+	local           bool
+	includeVcsPkgs  bool
+	printStatistics bool
+}
+
 func handlePackage(pkg pkg.Pkg) {
 
 	pkgVersion := pkg.Version()
@@ -72,29 +80,29 @@ func printStatistics() {
 }
 
 func main() {
-	remote := flag.Bool("pkg", false, "AUR package name(s)")
-	user := flag.String("user", "", "AUR username")
-	local := flag.Bool("local", false, "Local .SRCINFO files")
-	vcsPackages := flag.Bool("devel", false, "Check -git/-svn/-hg packages")
-	stats := flag.Bool("statistics", false, "Print summary statistics")
+	flag.StringVar(&commandline.user, "user", "", "AUR username")
+	flag.BoolVar(&commandline.remote, "pkg", false, "AUR package name(s)")
+	flag.BoolVar(&commandline.local, "local", false, "Local .SRCINFO files")
+	flag.BoolVar(&commandline.includeVcsPkgs, "devel", false, "Check -git/-svn/-hg packages")
+	flag.BoolVar(&commandline.printStatistics, "statistics", false, "Print summary statistics")
 	flag.Parse()
-	if *user != "" {
-		packages, err := aur.SearchByMaintainer(*user)
-		handlePackages(*vcsPackages, pkg.NewRemotePkgs(packages), err)
-	} else if *remote {
+	if commandline.user != "" {
+		packages, err := aur.SearchByMaintainer(commandline.user)
+		handlePackages(commandline.includeVcsPkgs, pkg.NewRemotePkgs(packages), err)
+	} else if commandline.remote {
 		packages, err := aur.Info(flag.Args())
 		handlePackages(false, pkg.NewRemotePkgs(packages), err)
 		handlePackages(true, pkg.NewRemotePkgs(packages), err)
-	} else if *local {
+	} else if commandline.local {
 		packages, err := pkg.NewLocalPkgs(flag.Args())
 		handlePackages(false, packages, err)
 		handlePackages(true, packages, err)
 	} else {
-		fmt.Fprintln(os.Stderr, "Either -user or -pkg is required!")
+		fmt.Fprintln(os.Stderr, "Either -user or -pkg or -local is required!")
 		flag.Usage()
 		os.Exit(1)
 	}
-	if *stats {
+	if commandline.printStatistics {
 		printStatistics()
 	}
 }
