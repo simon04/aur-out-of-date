@@ -118,9 +118,17 @@ func main() {
 		packages, err := aur.SearchByMaintainer(commandline.user)
 		handlePackages(commandline.includeVcsPkgs, pkg.NewRemotePkgs(packages), err)
 	} else if commandline.remote {
-		packages, err := aur.Info(flag.Args())
-		handlePackages(false, pkg.NewRemotePkgs(packages), err)
-		handlePackages(true, pkg.NewRemotePkgs(packages), err)
+		pkgs := flag.Args()
+		for len(pkgs) > 0 {
+			limit := 100
+			if len(pkgs) < limit {
+				limit = len(pkgs)
+			}
+			packages, err := aur.Info(pkgs[:limit])
+			handlePackages(false, pkg.NewRemotePkgs(packages), err)
+			handlePackages(true, pkg.NewRemotePkgs(packages), err)
+			pkgs = pkgs[limit:]
+		}
 	} else if commandline.local {
 		packages, err := pkg.NewLocalPkgs(flag.Args())
 		handlePackages(false, packages, err)
