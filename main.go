@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"sort"
 	"strings"
 
@@ -25,6 +26,7 @@ var commandline struct {
 	local           bool
 	includeVcsPkgs  bool
 	printStatistics bool
+	flagOnAur       bool
 }
 
 func handlePackage(pkg pkg.Pkg) {
@@ -44,9 +46,34 @@ func handlePackage(pkg pkg.Pkg) {
 	} else if pkgVersion.Older(string(upstreamVersion)) {
 		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
 		statistics.OutOfDate++
+		flagOnAur(pkg, upstreamVersion)
 	} else {
 		fmt.Printf("\x1b[32m[UP-TO-DATE]  [%s] Package %s %v-%v matches upstream version %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
 		statistics.UpToDate++
+	}
+}
+
+func flagOnAur(pkg pkg.Pkg, upstreamVersion upstream.Version) {
+	if !commandline.flagOnAur {
+		return
+	}
+	fmt.Printf("Should the package %s be flagged out-of-date? [y/N] ", pkg.Name())
+	var response string
+	chars, err := fmt.Scanln(&response)
+	if err != nil || chars == 0 {
+		return
+	}
+	if response != "y" && response != "Y" {
+		return
+	}
+	fmt.Printf("Flagging package %s out-of-date ...\n", pkg.Name())
+	comment := fmt.Sprintf("Version %s is out. #simon04/aur-out-of-date", upstreamVersion)
+	cmd := exec.Command("ssh", "aur@aur.archlinux.org", "flag", pkg.Name(), "\""+comment+"\"")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Failed to flag out-of-date (running \"%v\"): %v\n%s\n", strings.Join(cmd.Args, "\" \""), err, output)
+	} else {
+		fmt.Printf("%s", output)
 	}
 }
 
@@ -85,6 +112,7 @@ func main() {
 	flag.BoolVar(&commandline.local, "local", false, "Local .SRCINFO files")
 	flag.BoolVar(&commandline.includeVcsPkgs, "devel", false, "Check -git/-svn/-hg packages")
 	flag.BoolVar(&commandline.printStatistics, "statistics", false, "Print summary statistics")
+	flag.BoolVar(&commandline.flagOnAur, "flag", false, "Flag out-of-date on AUR")
 	flag.Parse()
 	if commandline.user != "" {
 		packages, err := aur.SearchByMaintainer(commandline.user)
