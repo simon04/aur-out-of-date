@@ -16,6 +16,29 @@ Usage
 -----
 
 ```
+$ aur-out-of-date
+Usage of aur-out-of-date:
+  -devel
+        Check -git/-svn/-hg packages
+  -flag
+        Flag out-of-date on AUR
+  -local
+        Local .SRCINFO files
+  -pkg
+        AUR package name(s)
+  -statistics
+        Print summary statistics
+  -user string
+        AUR username
+```
+
+AUR packages can be obtained …
+
+- for a given AUR user (using `-user simon04`; specify `-devel` to include VCS packages), or
+- from a list of packages via [AUR RPC](https://aur.archlinux.org/rpc.php) (using `-pkg package1 package2 …`), or
+- from local `.SRCINFO` files (using `-local packages/*/.SRCINFO`).
+
+```
 $ aur-out-of-date -user simon04
 [OUT-OF-DATE] [python-mwclient] Package python-mwclient should be updated from 0.8.6-1 to 0.8.7-1
 [OUT-OF-DATE] [nodejs-osmtogeojson] Package nodejs-osmtogeojson should be updated from 2.2.12-1 to 3.0.0
@@ -31,6 +54,8 @@ $ aur-out-of-date -pkg caddy dep aur-out-of-date
 
 $ aur-out-of-date -local packages/*/.SRCINFO
 ```
+
+Summary statistics can be enabled using `-statistics`. The option `-flag` flags out-of-date packages on AUR after a user prompt: "Should the package … be flagged out-of-date?"
 
 Principle
 ---------
