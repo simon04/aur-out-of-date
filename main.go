@@ -77,18 +77,11 @@ func flagOnAur(pkg pkg.Pkg, upstreamVersion upstream.Version) {
 	}
 }
 
-// byName is used for sorting packages by their name
-type byName []pkg.Pkg
-
-func (a byName) Len() int           { return len(a) }
-func (a byName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byName) Less(i, j int) bool { return strings.Compare(a[i].Name(), a[j].Name()) == -1 }
-
 func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	if err != nil {
 		panic(err)
 	}
-	sort.Sort(byName(packages))
+	sort.Slice(packages, func(i, j int) bool { return strings.Compare(packages[i].Name(), packages[j].Name()) == -1 })
 	for _, pkg := range packages {
 		isVcsPackage := strings.HasSuffix(pkg.Name(), "-git") || strings.HasSuffix(pkg.Name(), "-hg") || strings.HasSuffix(pkg.Name(), "-svn")
 		if vcsPackages == isVcsPackage {
