@@ -19,6 +19,11 @@ type gitHubRelease struct {
 	PublishedAt time.Time `json:"published_at"`
 }
 
+type gitHubMessage struct {
+	Message          string `json:"message"`
+	DocumentationURL string `json:"documentation_url"`
+}
+
 func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 	match := re.FindSubmatch([]byte(u))
 	if match == nil {
@@ -46,6 +51,15 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 	defer resp.Body.Close()
 
 	dec := json.NewDecoder(resp.Body)
+	if resp.StatusCode == http.StatusForbidden {
+		var message gitHubMessage
+		err = dec.Decode(&message)
+		if err == nil && message.Message != "" {
+			err = errors.Wrap(message.Message, 0)
+		}
+		return "", errors.WrapPrefix(err, "Failed to obtain GitHub release for "+u, 0)
+	}
+
 	var release gitHubRelease
 	err = dec.Decode(&release)
 	if err != nil {
