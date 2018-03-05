@@ -34,28 +34,39 @@ var commandline struct {
 	flagOnAur       bool
 }
 
-func handlePackage(pkg pkg.Pkg) {
+func handlePackage(pkg pkg.Pkg) upstream.Status {
 
 	pkgVersion := pkg.Version()
+	status := upstream.Status{
+		Package:          pkg.Name(),
+		FlaggedOutOfDate: pkg.OutOfDate(),
+		Version:          pkgVersion.String(),
+	}
 
 	upstreamVersion, err := upstream.VersionForPkg(pkg)
 	if err != nil {
-		fmt.Printf("\x1b[37m[UNKNOWN]     [%s] %v \x1b[0m\n", pkg.Name(), err)
+		status.Status = upstream.Unknown
+		status.Message = err.Error()
 		statistics.Unknown++
-		return
+		return status
 	}
+	status.Upstream = upstreamVersion
 
 	if pkg.OutOfDate() {
-		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s has been flagged out-of-date and should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		status.Status = upstream.FlaggedOutOfDate
+		status.Message = fmt.Sprintf("Package %s has been flagged out-of-date and should be updated from %v-%v to %v", pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
 		statistics.FlaggedOutOfDate++
 	} else if pkgVersion.Older(string(upstreamVersion)) {
-		fmt.Printf("\x1b[31m[OUT-OF-DATE] [%s] Package %s should be updated from %v-%v to %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		status.Status = upstream.OutOfDate
+		status.Message = fmt.Sprintf("Package %s should be updated from %v-%v to %v", pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
 		statistics.OutOfDate++
 		flagOnAur(pkg, upstreamVersion)
 	} else {
-		fmt.Printf("\x1b[32m[UP-TO-DATE]  [%s] Package %s %v-%v matches upstream version %v \x1b[0m\n", pkg.Name(), pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		status.Status = upstream.UpToDate
+		status.Message = fmt.Sprintf("Package %s %v-%v matches upstream version %v", pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
 		statistics.UpToDate++
 	}
+	return status
 }
 
 func flagOnAur(pkg pkg.Pkg, upstreamVersion upstream.Version) {
@@ -90,7 +101,8 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	for _, pkg := range packages {
 		isVcsPackage := strings.HasSuffix(pkg.Name(), "-git") || strings.HasSuffix(pkg.Name(), "-hg") || strings.HasSuffix(pkg.Name(), "-svn")
 		if vcsPackages == isVcsPackage {
-			handlePackage(pkg)
+			status := handlePackage(pkg)
+			status.Print()
 		}
 	}
 }
