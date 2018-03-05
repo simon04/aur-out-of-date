@@ -36,3 +36,11 @@
 [[constraint]]
   name = "github.com/h2non/gock"
   version = "1.0.7"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gregjones/httpcache"
+
+[[constraint]]
+  name = "github.com/zchee/go-xdgbasedir"
+  version = "1.0.0"

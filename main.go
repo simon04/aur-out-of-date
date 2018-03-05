@@ -3,14 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"sort"
 	"strings"
 
+	"github.com/gregjones/httpcache"
+	"github.com/gregjones/httpcache/diskcache"
 	"github.com/mikkeloscar/aur"
 	"github.com/simon04/aur-out-of-date/pkg"
 	"github.com/simon04/aur-out-of-date/upstream"
+	xdgbasedir "github.com/zchee/go-xdgbasedir"
 )
 
 var statistics struct {
@@ -107,6 +112,11 @@ func main() {
 	flag.BoolVar(&commandline.printStatistics, "statistics", false, "Print summary statistics")
 	flag.BoolVar(&commandline.flagOnAur, "flag", false, "Flag out-of-date on AUR")
 	flag.Parse()
+
+	// cache HTTP requests (RFC 7234)
+	cacheDir := path.Join(xdgbasedir.CacheHome(), "aur-out-of-date")
+	http.DefaultClient = httpcache.NewTransport(diskcache.New(cacheDir)).Client()
+
 	if commandline.user != "" {
 		packages, err := aur.SearchByMaintainer(commandline.user)
 		handlePackages(commandline.includeVcsPkgs, pkg.NewRemotePkgs(packages), err)
