@@ -1,25 +1,21 @@
 package upstream
 
 import (
-	"encoding/xml"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"regexp"
+	"time"
 
 	"github.com/go-errors/errors"
 )
 
-type atomFeed struct {
-	Items []atomEntry `xml:"entry"`
-}
-
-type atomEntry struct {
-	Link atomLink `xml:"link"`
-}
-
-type atomLink struct {
-	Href string `xml:"href,attr"`
+type gitHubRelease struct {
+	URL         string    `json:"url"`
+	Name        string    `json:"name"`
+	Prerelease  bool      `json:"prerelease"`
+	Draft       bool      `json:"draft"`
+	PublishedAt time.Time `json:"published_at"`
 }
 
 func githubVersion(u string, re *regexp.Regexp) (Version, error) {
@@ -29,29 +25,25 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 	}
 
 	owner, repo := string(match[1]), string(match[2])
-	resp, err := http.Get(fmt.Sprintf("https://github.com/%s/%s/releases.atom", owner, repo))
+	// API documentation: https://developer.github.com/v3/repos/releases/
+	resp, err := http.Get(fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", owner, repo))
 	if err != nil {
 		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
 	}
 	defer resp.Body.Close()
 
-	dec := xml.NewDecoder(resp.Body)
-	var feed atomFeed
-	err = dec.Decode(&feed)
+	dec := json.NewDecoder(resp.Body)
+	var release gitHubRelease
+	err = dec.Decode(&release)
 	if err != nil {
 		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
-	} else if len(feed.Items) == 0 {
+	} else if release.Name == "" {
 		return "", errors.Errorf("No GitHub release found for %s", u)
+	} else if release.Prerelease {
+		return "", errors.Errorf("Ignoring GitHub pre-release %s for %s", release.Name, u)
+	} else if release.Draft {
+		return "", errors.Errorf("Ignoring GitHub release draft %s for %s", release.Name, u)
 	}
 
-	href, err := url.PathUnescape(feed.Items[0].Link.Href)
-	if err != nil {
-		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
-	}
-	link := regexp.MustCompile("/releases/tag/v?(.*)").FindSubmatch([]byte(href))
-	if link == nil {
-		return "", errors.Errorf("No GitHub release found for %s", u)
-	}
-	version := string(link[1])
-	return Version(version), nil
+	return Version(release.Name), nil
 }

@@ -9,30 +9,22 @@ import (
 )
 
 func mockGitHub() *gock.Response {
-	return gock.New("https://github.com/").
-		Get("/gogits/gogs/releases.atom").
+	return gock.New("https://api.github.com/").
+		Get("/repos/gogits/gogs/releases/latest").
 		Reply(http.StatusOK).
 		SetHeader("Content-Type", "application/atom+xml").
 		BodyString(`
-			<?xml version="1.0" encoding="UTF-8"?>
-			<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
-				<id>tag:github.com,2008:https://github.com/gogits/gogs/releases</id>
-				<link type="text/html" rel="alternate" href="https://github.com/gogits/gogs/releases"/>
-				<link type="application/atom+xml" rel="self" href="https://github.com/gogits/gogs/releases.atom"/>
-				<title>Release notes from gogs</title>
-				<updated>2017-11-22T20:46:14+01:00</updated>
-				<entry>
-					<id>tag:github.com,2008:Repository/16752620/v0.11.34</id>
-					<updated>2017-11-22T20:52:48+01:00</updated>
-					<link rel="alternate" type="text/html" href="/gogits/gogs/releases/tag/v0.11.34"/>
-					<title>0.11.34</title>
-					<content type="html"></content>
-					<author>
-						<name>Unknwon</name>
-					</author>
-					<media:thumbnail height="30" width="30" url="https://avatars0.githubusercontent.com/u/2946214?s=60&amp;v=4"/>
-				</entry>
-			</feed>
+			{
+				"url": "https://api.github.com/repos/gogits/gogs/releases/8625798",
+				"id": 8625798,
+				"tag_name": "v0.11.34",
+				"target_commitish": "master",
+				"name": "0.11.34",
+				"draft": false,
+				"prerelease": false,
+				"created_at": "2017-11-22T19:46:14Z",
+				"published_at": "2017-11-22T19:52:48Z"
+			}			
 			`)
 }
 
