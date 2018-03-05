@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"net/url"
 	"regexp"
 
 	"github.com/go-errors/errors"
@@ -21,16 +22,16 @@ type atomLink struct {
 	Href string `xml:"href,attr"`
 }
 
-func githubVersion(url string, re *regexp.Regexp) (Version, error) {
-	match := re.FindSubmatch([]byte(url))
+func githubVersion(u string, re *regexp.Regexp) (Version, error) {
+	match := re.FindSubmatch([]byte(u))
 	if match == nil {
-		return "", errors.Errorf("No GitHub release found for %s", url)
+		return "", errors.Errorf("No GitHub release found for %s", u)
 	}
 
 	owner, repo := string(match[1]), string(match[2])
 	resp, err := http.Get(fmt.Sprintf("https://github.com/%s/%s/releases.atom", owner, repo))
 	if err != nil {
-		return "", errors.WrapPrefix(err, "No GitHub release found for "+url, 0)
+		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
 	}
 	defer resp.Body.Close()
 
@@ -38,14 +39,18 @@ func githubVersion(url string, re *regexp.Regexp) (Version, error) {
 	var feed atomFeed
 	err = dec.Decode(&feed)
 	if err != nil {
-		return "", errors.WrapPrefix(err, "No GitHub release found for "+url, 0)
+		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
 	} else if len(feed.Items) == 0 {
-		return "", errors.Errorf("No GitHub release found for %s", url)
+		return "", errors.Errorf("No GitHub release found for %s", u)
 	}
 
-	link := regexp.MustCompile("/releases/tag/v?(.*)").FindSubmatch([]byte(feed.Items[0].Link.Href))
+	href, err := url.PathUnescape(feed.Items[0].Link.Href)
+	if err != nil {
+		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
+	}
+	link := regexp.MustCompile("/releases/tag/v?(.*)").FindSubmatch([]byte(href))
 	if link == nil {
-		return "", errors.Errorf("No GitHub release found for %s", url)
+		return "", errors.Errorf("No GitHub release found for %s", u)
 	}
 	version := string(link[1])
 	return Version(version), nil
