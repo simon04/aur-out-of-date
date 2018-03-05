@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"time"
 
@@ -26,7 +27,19 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 
 	owner, repo := string(match[1]), string(match[2])
 	// API documentation: https://developer.github.com/v3/repos/releases/
-	resp, err := http.Get(fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", owner, repo))
+	api := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", owner, repo)
+	req, err := http.NewRequest("GET", api, nil)
+
+	// Obtain GitHub token for higher request limits, see https://developer.github.com/v3/#rate-limiting
+	token := os.Getenv("GITHUB_TOKEN")
+	if token != "" {
+		req.Header.Set("Authorization", "token "+token)
+	}
+	if err != nil {
+		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
 	}
