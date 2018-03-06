@@ -27,3 +27,14 @@ func TestStatisticsOutput(t *testing.T) {
 		t.Errorf("Unexpected '%s'", actual)
 	}
 }
+
+func TestStatisticsJSONOutput(t *testing.T) {
+	out := bytes.NewBuffer(nil)
+	statisticsWriter = out
+	stat.PrintJSONTextSequence()
+	actual := string(out.Bytes())
+	expected := "\u001e" + `{"type":"statistics","up_to_date":2,"flagged_out_of_date":3,"out_of_date":5,"unknown":7}` + "\u000a"
+	if actual != expected {
+		t.Errorf("Expecting '%s', but got '%s'", expected, actual)
+	}
+}

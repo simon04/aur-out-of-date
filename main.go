@@ -145,7 +145,9 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	if commandline.printStatistics {
+	if commandline.printStatistics && commandline.printJSON {
+		statistics.PrintJSONTextSequence()
+	} else if commandline.printStatistics {
 		statistics.Print()
 	}
 	if statistics.OutOfDate > 0 {

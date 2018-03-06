@@ -29,7 +29,7 @@ func TestStatusJSONOutput(t *testing.T) {
 	statusWriter = out
 	s.PrintJSONTextSequence()
 	actual := string(out.Bytes())
-	expected := "\u001e" + `{"name":"spectre-meltdown-checker","message":"Package spectre-meltdown-checker 0.35-1 matches upstream version 0.35","version":"0.35-1","upstream":"0.35","status":"UP-TO-DATE"}` + "\u000a"
+	expected := "\u001e" + `{"type":"package","name":"spectre-meltdown-checker","message":"Package spectre-meltdown-checker 0.35-1 matches upstream version 0.35","version":"0.35-1","upstream":"0.35","status":"UP-TO-DATE"}` + "\u000a"
 	if actual != expected {
 		t.Errorf("Expecting '%s', but got '%s'", expected, actual)
 	}

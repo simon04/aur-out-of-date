@@ -1,10 +1,11 @@
 package upstream
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
+
+	rfc7464 "github.com/simon04/aur-out-of-date/rfc7464go"
 )
 
 var statusWriter io.Writer = os.Stdout
@@ -26,6 +27,7 @@ const Unknown = State("UNKNOWN")
 
 // Status holds the packaged and upstream version for a package
 type Status struct {
+	Type             string  `json:"type"`
 	Package          string  `json:"name"`
 	Message          string  `json:"message"`
 	FlaggedOutOfDate bool    `json:"flagged,omitempty"`
@@ -55,9 +57,6 @@ func (s *Status) Print() {
 
 // PrintJSONTextSequence outputs the status as JSON Text Sequences (RFC 7464)
 func (s *Status) PrintJSONTextSequence() {
-	// https://tools.ietf.org/html/rfc7464 JavaScript Object Notation (JSON) Text Sequences
-	statusWriter.Write([]byte("\u001e")) // record separator
-	bytes, _ := json.Marshal(s)
-	statusWriter.Write(bytes)
-	statusWriter.Write([]byte("\u000a")) // line feed
+	s.Type = "package"
+	rfc7464.NewEncoder(statusWriter).Encode(s)
 }

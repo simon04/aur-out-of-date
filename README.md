@@ -59,8 +59,8 @@ The output can be switched to a machine-readable format – [JavaScript Object N
 
 ```json
 $ aur-out-of-date -json -pkg nodejs-osmtogeojson spectre-meltdown-checker
-{"name":"nodejs-osmtogeojson","message":"Package nodejs-osmtogeojson should be updated from 2.2.12-1 to 3.0.0","version":"2.2.12-1","upstream":"3.0.0","status":"OUT-OF-DATE"}
-{"name":"spectre-meltdown-checker","message":"Package spectre-meltdown-checker 0.35-1 matches upstream version 0.35","version":"0.35-1","upstream":"0.35","status":"UP-TO-DATE"}
+{"type":"package","name":"nodejs-osmtogeojson","message":"Package nodejs-osmtogeojson should be updated from 2.2.12-1 to 3.0.0","version":"2.2.12-1","upstream":"3.0.0","status":"OUT-OF-DATE"}
+{"type":"package","name":"spectre-meltdown-checker","message":"Package spectre-meltdown-checker 0.35-1 matches upstream version 0.35","version":"0.35-1","upstream":"0.35","status":"UP-TO-DATE"}
 ```
 
 Summary statistics can be enabled using `-statistics`.
