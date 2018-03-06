@@ -148,4 +148,7 @@ func main() {
 	if commandline.printStatistics {
 		statistics.Print()
 	}
+	if statistics.OutOfDate > 0 {
+		os.Exit(4)
+	}
 }

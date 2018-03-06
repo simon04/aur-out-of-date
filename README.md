@@ -67,6 +67,8 @@ Summary statistics can be enabled using `-statistics`.
 
 The option `-flag` flags out-of-date packages on AUR after a user prompt: "Should the package … be flagged out-of-date?"
 
+The tool `aur-out-of-date` exists with code `4` if at least one out-of-date package has been found.
+
 Principle
 ---------
 
