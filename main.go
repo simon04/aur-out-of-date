@@ -30,6 +30,7 @@ var commandline struct {
 	remote          bool
 	local           bool
 	includeVcsPkgs  bool
+	printJSON       bool
 	printStatistics bool
 	flagOnAur       bool
 }
@@ -102,7 +103,11 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 		isVcsPackage := strings.HasSuffix(pkg.Name(), "-git") || strings.HasSuffix(pkg.Name(), "-hg") || strings.HasSuffix(pkg.Name(), "-svn")
 		if vcsPackages == isVcsPackage {
 			status := handlePackage(pkg)
-			status.Print()
+			if commandline.printJSON {
+				status.PrintJSONTextSequence()
+			} else {
+				status.Print()
+			}
 		}
 	}
 }
@@ -123,6 +128,7 @@ func main() {
 	flag.BoolVar(&commandline.includeVcsPkgs, "devel", false, "Check -git/-svn/-hg packages")
 	flag.BoolVar(&commandline.printStatistics, "statistics", false, "Print summary statistics")
 	flag.BoolVar(&commandline.flagOnAur, "flag", false, "Flag out-of-date on AUR")
+	flag.BoolVar(&commandline.printJSON, "json", false, "Generate JSON Text Sequences (RFC 7464)")
 	flag.Parse()
 
 	// cache HTTP requests (RFC 7234)
