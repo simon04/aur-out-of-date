@@ -1,5 +1,13 @@
 # Release History
 
+## 1.0.0 (2018-03-06)
+
+* Use [GitHub releases API](https://developer.github.com/v3/repos/releases/) to skip pre-releases, release drafts
+* Cache HTTP requests using `github.com/gregjones/httpcache`
+* Provide machine-readable format: JSON Text Sequences ([RFC 7464](https://tools.ietf.org/html/rfc7464))
+* Exit with code `4` if at least one out-of-date package has been found
+* Fix error on Unicode characters in package version
+
 ## 0.8.0 (2018-02-24)
 
 * Print summary statistics
