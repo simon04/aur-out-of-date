@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	rfc7464 "github.com/simon04/aur-out-of-date/rfc7464go"
+	"github.com/simon04/aur-out-of-date/rfc7464"
 )
 
 var statusWriter io.Writer = os.Stdout
