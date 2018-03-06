@@ -18,12 +18,7 @@ import (
 	xdgbasedir "github.com/zchee/go-xdgbasedir"
 )
 
-var statistics struct {
-	UpToDate         int
-	FlaggedOutOfDate int
-	OutOfDate        int
-	Unknown          int
-}
+var statistics upstream.Statistics
 
 var commandline struct {
 	user            string
@@ -112,15 +107,6 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	}
 }
 
-func printStatistics() {
-	fmt.Println()
-	fmt.Println("[STATISTICS]")
-	fmt.Printf("\x1b[32m%12s: %4d \x1b[0m\n", "UP-TO-DATE", statistics.UpToDate)
-	fmt.Printf("\x1b[31m%12s: %4d \x1b[0m\n", "FLAGGED", statistics.FlaggedOutOfDate)
-	fmt.Printf("\x1b[31m%12s: %4d \x1b[0m\n", "OUT-OF-DATE", statistics.OutOfDate)
-	fmt.Printf("\x1b[37m%12s: %4d \x1b[0m\n", "UNKNOWN", statistics.Unknown)
-}
-
 func main() {
 	flag.StringVar(&commandline.user, "user", "", "AUR username")
 	flag.BoolVar(&commandline.remote, "pkg", false, "AUR package name(s)")
@@ -160,6 +146,6 @@ func main() {
 		os.Exit(1)
 	}
 	if commandline.printStatistics {
-		printStatistics()
+		statistics.Print()
 	}
 }
