@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -72,5 +73,6 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 		return "", errors.Errorf("Ignoring GitHub release draft %s for %s", release.Name, u)
 	}
 
-	return Version(release.Name), nil
+	v := strings.TrimLeft(release.Name, "v")
+	return Version(v), nil
 }

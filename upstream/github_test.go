@@ -19,7 +19,7 @@ func mockGitHub() *gock.Response {
 				"id": 8625798,
 				"tag_name": "v0.11.34",
 				"target_commitish": "master",
-				"name": "0.11.34",
+				"name": "v0.11.34",
 				"draft": false,
 				"prerelease": false,
 				"created_at": "2017-11-22T19:46:14Z",
