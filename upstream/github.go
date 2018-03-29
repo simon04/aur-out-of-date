@@ -15,6 +15,7 @@ import (
 type gitHubRelease struct {
 	URL         string    `json:"url"`
 	Name        string    `json:"name"`
+	TagName     string    `json:"tag_name"`
 	Prerelease  bool      `json:"prerelease"`
 	Draft       bool      `json:"draft"`
 	PublishedAt time.Time `json:"published_at"`
@@ -65,14 +66,16 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 	err = dec.Decode(&release)
 	if err != nil {
 		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
-	} else if release.Name == "" {
-		return "", errors.Errorf("No GitHub release found for %s", u)
 	} else if release.Prerelease {
 		return "", errors.Errorf("Ignoring GitHub pre-release %s for %s", release.Name, u)
 	} else if release.Draft {
 		return "", errors.Errorf("Ignoring GitHub release draft %s for %s", release.Name, u)
+	} else if release.Name != "" {
+		v := strings.TrimLeft(release.Name, "v")
+		return Version(v), nil
+	} else if release.TagName != "" {
+		v := strings.TrimLeft(release.TagName, "v")
+		return Version(v), nil
 	}
-
-	v := strings.TrimLeft(release.Name, "v")
-	return Version(v), nil
+	return "", errors.Errorf("No GitHub release found for %s", u)
 }
