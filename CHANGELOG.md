@@ -1,5 +1,10 @@
 # Release History
 
+## 1.1.0 (2018-03-29)
+
+* NPM: support `@scoped/packages`
+* GitHub: fall back to `tag_name` when release does not have a `name`
+
 ## 1.0.0 (2018-03-06)
 
 * Use [GitHub releases API](https://developer.github.com/v3/repos/releases/) to skip pre-releases, release drafts
