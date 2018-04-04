@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -86,11 +85,9 @@ func (g gitHub) latestVersion() (Version, error) {
 	} else if release.Draft {
 		return "", errors.Errorf("Ignoring GitHub release draft %s for %s", release.Name, g.String())
 	} else if release.Name != "" {
-		v := strings.TrimLeft(release.Name, "v")
-		return Version(v), nil
+		return Version(release.Name), nil
 	} else if release.TagName != "" {
-		v := strings.TrimLeft(release.TagName, "v")
-		return Version(v), nil
+		return Version(release.TagName), nil
 	}
 	return "", g.errorNotFound()
 }

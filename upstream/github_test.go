@@ -37,7 +37,7 @@ func TestGogsGitHubUrl(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if version != "0.11.34" {
+	if version.String() != "0.11.34" {
 		t.Errorf("Expecting version 0.11.34, but got %v", version)
 	}
 }
@@ -51,7 +51,7 @@ func TestGogsGitHubSource(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if version != "0.11.34" {
+	if version.String() != "0.11.34" {
 		t.Errorf("Expecting version 0.11.34, but got %v", version)
 	}
 }

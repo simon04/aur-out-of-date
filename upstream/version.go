@@ -13,6 +13,13 @@ import (
 // Version represents the upstream version of a software project
 type Version string
 
+// String returns a sanitized version string
+func (v Version) String() string {
+	s := string(v)
+	s = strings.TrimLeft(s, "v")
+	return s
+}
+
 func forURL(url string) (Version, error) {
 	switch {
 	case strings.Contains(url, "github.com"):

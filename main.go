@@ -47,7 +47,7 @@ func handlePackage(pkg pkg.Pkg) upstream.Status {
 		statistics.Unknown++
 		return status
 	}
-	upstreamCompleteVersion, err := pkgbuild.NewCompleteVersion(string(upstreamVersion))
+	upstreamCompleteVersion, err := pkgbuild.NewCompleteVersion(upstreamVersion.String())
 	if err != nil {
 		status.Status = upstream.Unknown
 		status.Message = fmt.Sprintf("Failed to parse upstream version: %v", err)
