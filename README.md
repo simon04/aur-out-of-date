@@ -79,6 +79,12 @@ For each package, the upstream URL and/or source URL is matched against supporte
 * `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
 * `search.cpan.org` or `search.mcpan.org` -> https://fastapi.metacpan.org/v1/release/…
 
+Related projects
+----------------
+
+* https://github.com/repology/repology
+* https://github.com/lilydjwg/nvchecker
+
 License
 -------
 
