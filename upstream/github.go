@@ -12,6 +12,28 @@ import (
 	"github.com/go-errors/errors"
 )
 
+type gitHub struct {
+	owner      string
+	repository string
+}
+
+func (g gitHub) String() string {
+	return g.owner + "/" + g.repository
+}
+
+func (g gitHub) latestReleaseURL() string {
+	// API documentation: https://developer.github.com/v3/repos/releases/
+	return fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", g.owner, g.repository)
+}
+
+func (g gitHub) errorWrap(err error) error {
+	return errors.WrapPrefix(err, "Failed to obtain GitHub release for "+g.String()+" from "+g.latestReleaseURL(), 0)
+}
+
+func (g gitHub) errorNotFound() error {
+	return errors.Errorf("No GitHub release found for %s on %s", g, g.latestReleaseURL())
+}
+
 type gitHubRelease struct {
 	URL         string    `json:"url"`
 	Name        string    `json:"name"`
@@ -32,10 +54,8 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 		return "", errors.Errorf("No GitHub release found for %s", u)
 	}
 
-	owner, repo := string(match[1]), string(match[2])
-	// API documentation: https://developer.github.com/v3/repos/releases/
-	api := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", owner, repo)
-	req, err := http.NewRequest("GET", api, nil)
+	g := gitHub{string(match[1]), string(match[2])}
+	req, err := http.NewRequest("GET", g.latestReleaseURL(), nil)
 
 	// Obtain GitHub token for higher request limits, see https://developer.github.com/v3/#rate-limiting
 	token := os.Getenv("GITHUB_TOKEN")
@@ -43,12 +63,12 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 		req.Header.Set("Authorization", "token "+token)
 	}
 	if err != nil {
-		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
+		return "", g.errorWrap(err)
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", errors.WrapPrefix(err, "No GitHub release found for "+u, 0)
+		return "", g.errorWrap(err)
 	}
 	defer resp.Body.Close()
 
@@ -59,7 +79,9 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 		if err == nil && message.Message != "" {
 			err = errors.Wrap(message.Message, 0)
 		}
-		return "", errors.WrapPrefix(err, "Failed to obtain GitHub release for "+u, 0)
+		return "", g.errorWrap(err)
+	} else if resp.StatusCode == http.StatusNotFound {
+		return "", g.errorNotFound()
 	}
 
 	var release gitHubRelease
@@ -77,5 +99,5 @@ func githubVersion(u string, re *regexp.Regexp) (Version, error) {
 		v := strings.TrimLeft(release.TagName, "v")
 		return Version(v), nil
 	}
-	return "", errors.Errorf("No GitHub release found for %s", u)
+	return "", g.errorNotFound()
 }
