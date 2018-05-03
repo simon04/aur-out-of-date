@@ -1,6 +1,8 @@
 package upstream
 
 import (
+	"encoding/json"
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -14,32 +16,55 @@ type Version string
 func forURL(url string) (Version, error) {
 	switch {
 	case strings.Contains(url, "github.com"):
-		return githubVersion(url, regexp.MustCompile("github.com/([^/#.]+)/([^/#]+)"))
+		match := regexp.MustCompile("github.com/([^/#.]+)/([^/#]+)").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return gitHub{match[1], match[2]}.latestVersion()
+		}
 	case strings.Contains(url, "github.io"):
-		return githubVersion(url, regexp.MustCompile("([^/#.]+).github.io/([^/#]+)"))
+		match := regexp.MustCompile("([^/#.]+).github.io/([^/#]+)").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return gitHub{match[1], match[2]}.latestVersion()
+		}
 	case strings.Contains(url, "registry.npmjs.org"):
-		return npmVersion(url, regexp.MustCompile("registry.npmjs.org/((@[^/#.]+/)?[^/#.]+)"))
+		match := regexp.MustCompile("registry.npmjs.org/((@[^/#.]+/)?[^/#.]+)").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return npm(match[1]).latestVersion()
+		}
 	case strings.Contains(url, "npmjs.com/package"):
-		return npmVersion(url, regexp.MustCompile("npmjs.com/package/((@[^/#.]+/)?[^/#.]+)"))
+		fallthrough
 	case strings.Contains(url, "npmjs.org/package"):
-		return npmVersion(url, regexp.MustCompile("npmjs.org/package/([^/#.]+)"))
+		match := regexp.MustCompile("/package/((@[^/#.]+/)?[^/#.]+)").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return npm(match[1]).latestVersion()
+		}
 	case strings.Contains(url, "pypi.python.org"):
-		return pythonVersion(url, regexp.MustCompile("pypi.python.org/packages/source/[^/#.]+/([^/#.]+)/"))
+		match := regexp.MustCompile("pypi.python.org/packages/source/[^/#.]+/([^/#.]+)/").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return pypi(match[1]).latestVersion()
+		}
 	case strings.Contains(url, "files.pythonhosted.org"):
-		return pythonVersion(url, regexp.MustCompile("files.pythonhosted.org/packages/source/[^/#.]+/([^/#.]+)/"))
+		match := regexp.MustCompile("files.pythonhosted.org/packages/source/[^/#.]+/([^/#.]+)/").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return pypi(match[1]).latestVersion()
+		}
 	case strings.Contains(url, "search.cpan.org"):
 		fallthrough
 	case strings.Contains(url, "search.mcpan.org"):
 		fallthrough
 	case strings.Contains(url, "cpan.metacpan.org"):
-		return perlVersion(url, regexp.MustCompile("/([^/#.]+?)-v?([0-9.-]+)\\.(tgz|tar.gz)$"))
+		match := regexp.MustCompile("/([^/#.]+?)-v?([0-9.-]+)\\.(tgz|tar.gz)$").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return cpan(match[1]).latestVersion()
+		}
 	case strings.Contains(url, "rubygems.org"):
 		fallthrough
 	case strings.Contains(url, "gems.rubyforge.org"):
-		return rubygemsVersion(url, regexp.MustCompile("/([^/#]+?)-[^-]+\\.gem$"))
-	default:
-		return "", errors.Errorf("No release found for %s", url)
+		match := regexp.MustCompile("/([^/#]+?)-[^-]+\\.gem$").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return rubygem(match[1]).latestVersion()
+		}
 	}
+	return "", errors.Errorf("No release found for %s", url)
 }
 
 // VersionForPkg determines the upstream version for the given package
@@ -56,4 +81,21 @@ func VersionForPkg(pkg pkg.Pkg) (Version, error) {
 		return forURL(sources[0])
 	}
 	return "", errors.WrapPrefix(err, "No release found for "+pkg.Name(), 0)
+}
+
+type releasesAPI interface {
+	releasesURL() string
+	latestVersion() (Version, error)
+}
+
+func fetchJSON(a releasesAPI, target interface{}) error {
+	url := a.releasesURL()
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	dec := json.NewDecoder(resp.Body)
+	return dec.Decode(target)
 }

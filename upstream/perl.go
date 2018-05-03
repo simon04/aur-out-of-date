@@ -1,35 +1,26 @@
 package upstream
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"regexp"
 
 	"github.com/go-errors/errors"
 )
 
-type cpanInfo struct {
+type cpanRelease struct {
 	Version string `json:"version"`
 }
 
-func perlVersion(url string, re *regexp.Regexp) (Version, error) {
-	match := re.FindSubmatch([]byte(url))
-	if match == nil {
-		return "", errors.Errorf("No CPAN release found for %s", url)
-	}
-	// API documentation: https://github.com/metacpan/metacpan-api/blob/master/docs/API-docs.md
-	resp, err := http.Get(fmt.Sprintf("https://fastapi.metacpan.org/v1/release/%s", match[1]))
-	if err != nil {
-		return "", errors.WrapPrefix(err, "No CPAN release found for "+url, 0)
-	}
-	defer resp.Body.Close()
+type cpan string
 
-	dec := json.NewDecoder(resp.Body)
-	var cpan cpanInfo
-	err = dec.Decode(&cpan)
-	if err != nil || cpan.Version == "" {
-		return "", errors.WrapPrefix(err, "No CPAN release found for "+url, 0)
+func (p cpan) releasesURL() string {
+	// API documentation: https://github.com/metacpan/metacpan-api/blob/master/docs/API-docs.md
+	return fmt.Sprintf("https://fastapi.metacpan.org/v1/release/%s", p)
+}
+
+func (p cpan) latestVersion() (Version, error) {
+	var info cpanRelease
+	if err := fetchJSON(p, &info); err != nil || info.Version == "" {
+		return "", errors.WrapPrefix(err, "No CPAN release found for "+string(p), 0)
 	}
-	return Version(cpan.Version), nil
+	return Version(info.Version), nil
 }

@@ -1,10 +1,7 @@
 package upstream
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -33,27 +30,10 @@ func (g rubygem) releasesURL() string {
 	return fmt.Sprintf("https://rubygems.org/api/v1/versions/%s.json", g)
 }
 
-func (g rubygem) errorWrap(err error) error {
-	return errors.WrapPrefix(err, "No RubyGems release found for "+string(g)+" on "+g.releasesURL(), 0)
-}
-
-func rubygemsVersion(u string, re *regexp.Regexp) (Version, error) {
-	match := re.FindSubmatch([]byte(u))
-	if match == nil {
-		return "", errors.Errorf("No RubyGems release found for %s", u)
-	}
-	gem := rubygem(string(match[1]))
-	resp, err := http.Get(gem.releasesURL())
-	if err != nil {
-		return "", gem.errorWrap(err)
-	}
-	defer resp.Body.Close()
-
-	dec := json.NewDecoder(resp.Body)
+func (g rubygem) latestVersion() (Version, error) {
 	var versions rubygemsVersions
-	err = dec.Decode(&versions)
-	if err != nil || len(versions) == 0 {
-		return "", gem.errorWrap(err)
+	if err := fetchJSON(g, &versions); err != nil || len(versions) == 0 {
+		return "", errors.WrapPrefix(err, "No RubyGems release found for "+string(g), 0)
 	}
 	return Version(versions[0].Number), nil
 }
