@@ -33,6 +33,10 @@ func forURL(url string) (Version, error) {
 		fallthrough
 	case strings.Contains(url, "cpan.metacpan.org"):
 		return perlVersion(url, regexp.MustCompile("/([^/#.]+?)-v?([0-9.-]+)\\.(tgz|tar.gz)$"))
+	case strings.Contains(url, "rubygems.org"):
+		fallthrough
+	case strings.Contains(url, "gems.rubyforge.org"):
+		return rubygemsVersion(url, regexp.MustCompile("/([^/#]+?)-[^-]+\\.gem$"))
 	default:
 		return "", errors.Errorf("No release found for %s", url)
 	}

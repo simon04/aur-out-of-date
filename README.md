@@ -77,7 +77,8 @@ For each package, the upstream URL and/or source URL is matched against supporte
 * `github.com` or `github.io` → http://api.github.com/repos/…/…/releases/latest (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITHUB_TOKEN` for [higher request limits](https://developer.github.com/v3/#rate-limiting))
 * `registry.npmjs.org` → https://registry.npmjs.org/-/package/…/dist-tags
 * `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
-* `search.cpan.org` or `search.mcpan.org` -> https://fastapi.metacpan.org/v1/release/…
+* `search.cpan.org` or `search.mcpan.org` → https://fastapi.metacpan.org/v1/release/…
+* `rubygems.org` or `gems.rubyforge.org` → https://rubygems.org/api/v1/versions/….json
 
 Related projects
 ----------------
