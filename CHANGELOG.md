@@ -1,5 +1,10 @@
 # Release History
 
+## 1.2.0 (2018-05-03)
+
+* GitHub: support dots in repository names
+* Add support for rubygems.org
+
 ## 1.1.0 (2018-03-29)
 
 * NPM: support `@scoped/packages`
