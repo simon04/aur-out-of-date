@@ -14,9 +14,9 @@ type Version string
 func forURL(url string) (Version, error) {
 	switch {
 	case strings.Contains(url, "github.com"):
-		return githubVersion(url, regexp.MustCompile("github.com/([^/#.]+)/([^/#.]+)"))
+		return githubVersion(url, regexp.MustCompile("github.com/([^/#.]+)/([^/#]+)"))
 	case strings.Contains(url, "github.io"):
-		return githubVersion(url, regexp.MustCompile("([^/#.]+).github.io/([^/#.]+)"))
+		return githubVersion(url, regexp.MustCompile("([^/#.]+).github.io/([^/#]+)"))
 	case strings.Contains(url, "registry.npmjs.org"):
 		return npmVersion(url, regexp.MustCompile("registry.npmjs.org/((@[^/#.]+/)?[^/#.]+)"))
 	case strings.Contains(url, "npmjs.com/package"):
