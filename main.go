@@ -13,6 +13,7 @@ import (
 	"github.com/gregjones/httpcache"
 	"github.com/gregjones/httpcache/diskcache"
 	"github.com/mikkeloscar/aur"
+	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 	"github.com/simon04/aur-out-of-date/pkg"
 	"github.com/simon04/aur-out-of-date/upstream"
 	xdgbasedir "github.com/zchee/go-xdgbasedir"
@@ -40,6 +41,10 @@ func handlePackage(pkg pkg.Pkg) upstream.Status {
 	}
 
 	upstreamVersion, err := upstream.VersionForPkg(pkg)
+	if err == nil {
+		// try parse upstream version and handle error
+		_, err = pkgbuild.NewCompleteVersion(string(upstreamVersion))
+	}
 	if err != nil {
 		status.Status = upstream.Unknown
 		status.Message = err.Error()
