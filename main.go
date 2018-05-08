@@ -55,16 +55,16 @@ func handlePackage(pkg pkg.Pkg) upstream.Status {
 
 	if pkg.OutOfDate() {
 		status.Status = upstream.FlaggedOutOfDate
-		status.Message = fmt.Sprintf("Package %s has been flagged out-of-date and should be updated from %v-%v to %v", pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		status.Message = fmt.Sprintf("has been flagged out-of-date and should be updated to %v", upstreamVersion)
 		statistics.FlaggedOutOfDate++
 	} else if pkgVersion.Older(string(upstreamVersion)) {
 		status.Status = upstream.OutOfDate
-		status.Message = fmt.Sprintf("Package %s should be updated from %v-%v to %v", pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		status.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
 		statistics.OutOfDate++
 		flagOnAur(pkg, upstreamVersion)
 	} else {
 		status.Status = upstream.UpToDate
-		status.Message = fmt.Sprintf("Package %s %v-%v matches upstream version %v", pkg.Name(), pkgVersion.Version, pkgVersion.Pkgrel, upstreamVersion)
+		status.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
 		statistics.UpToDate++
 	}
 	return status

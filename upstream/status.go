@@ -52,7 +52,7 @@ func (status State) color() string {
 // Print displays the status on the console
 func (s *Status) Print() {
 	ansiColor := s.Status.color()
-	fmt.Fprintf(statusWriter, "%s%22s [%s] %s \x1b[0m\n", ansiColor, "["+s.Status+"]", s.Package, s.Message)
+	fmt.Fprintf(statusWriter, "%s%22s [%s][%s] %s \x1b[0m\n", ansiColor, "["+s.Status+"]", s.Package, s.Version, s.Message)
 }
 
 // PrintJSONTextSequence outputs the status as JSON Text Sequences (RFC 7464)
