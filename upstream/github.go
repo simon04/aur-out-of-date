@@ -84,10 +84,10 @@ func (g gitHub) latestVersion() (Version, error) {
 		return "", errors.Errorf("Ignoring GitHub pre-release %s for %s", release.Name, g.String())
 	} else if release.Draft {
 		return "", errors.Errorf("Ignoring GitHub release draft %s for %s", release.Name, g.String())
-	} else if release.Name != "" {
-		return Version(release.Name), nil
 	} else if release.TagName != "" {
 		return Version(release.TagName), nil
+	} else if release.Name != "" {
+		return Version(release.Name), nil
 	}
 	return "", g.errorNotFound()
 }
