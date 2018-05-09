@@ -41,13 +41,16 @@ func handlePackage(pkg pkg.Pkg) upstream.Status {
 	}
 
 	upstreamVersion, err := upstream.VersionForPkg(pkg)
-	if err == nil {
-		// try parse upstream version and handle error
-		_, err = pkgbuild.NewCompleteVersion(string(upstreamVersion))
-	}
 	if err != nil {
 		status.Status = upstream.Unknown
 		status.Message = err.Error()
+		statistics.Unknown++
+		return status
+	}
+	upstreamCompleteVersion, err := pkgbuild.NewCompleteVersion(string(upstreamVersion))
+	if err != nil {
+		status.Status = upstream.Unknown
+		status.Message = fmt.Sprintf("Failed to parse upstream version: %v", err)
 		statistics.Unknown++
 		return status
 	}
@@ -57,7 +60,7 @@ func handlePackage(pkg pkg.Pkg) upstream.Status {
 		status.Status = upstream.FlaggedOutOfDate
 		status.Message = fmt.Sprintf("has been flagged out-of-date and should be updated to %v", upstreamVersion)
 		statistics.FlaggedOutOfDate++
-	} else if pkgVersion.Older(string(upstreamVersion)) {
+	} else if upstreamCompleteVersion.Newer(pkgVersion.String()) {
 		status.Status = upstream.OutOfDate
 		status.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
 		statistics.OutOfDate++
