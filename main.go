@@ -64,7 +64,6 @@ func handlePackage(pkg pkg.Pkg) upstream.Status {
 		status.Status = upstream.OutOfDate
 		status.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
 		statistics.OutOfDate++
-		flagOnAur(pkg, upstreamVersion)
 	} else {
 		status.Status = upstream.UpToDate
 		status.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
@@ -110,6 +109,9 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 				status.PrintJSONTextSequence()
 			} else {
 				status.Print()
+			}
+			if status.Status == upstream.OutOfDate {
+				flagOnAur(pkg, status.Upstream)
 			}
 		}
 	}
