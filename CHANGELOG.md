@@ -1,5 +1,10 @@
 # Release History
 
+## 1.3.0 (2018-05-14)
+
+* GitHub: prefer tag_name over release name
+* Clean version string for all providers (strip `v` prefix)
+
 ## 1.2.0 (2018-05-03)
 
 * GitHub: support dots in repository names
