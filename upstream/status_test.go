@@ -10,7 +10,7 @@ var s = Status{
 	Message:  "matches upstream version 0.35",
 	Version:  "0.35-1",
 	Upstream: "0.35",
-	Status:   "UP-TO-DATE",
+	Status:   UpToDate,
 }
 
 func TestStatusOutput(t *testing.T) {

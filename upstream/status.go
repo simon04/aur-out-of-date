@@ -10,33 +10,33 @@ import (
 
 var statusWriter io.Writer = os.Stdout
 
-// State represens the package up-to-date state
-type State string
+// StatusType represens the package up-to-date state
+type StatusType string
 
 // UpToDate means that the packaged version matches the upstream version
-const UpToDate = State("UP-TO-DATE")
+const UpToDate = StatusType("UP-TO-DATE")
 
 // FlaggedOutOfDate means that package is outdated and flagged
-const FlaggedOutOfDate = State("FLAGGED-OUT-OF-DATE")
+const FlaggedOutOfDate = StatusType("FLAGGED-OUT-OF-DATE")
 
 // OutOfDate means that package is outdated
-const OutOfDate = State("OUT-OF-DATE")
+const OutOfDate = StatusType("OUT-OF-DATE")
 
 // Unknown represents an unknown upstream version
-const Unknown = State("UNKNOWN")
+const Unknown = StatusType("UNKNOWN")
 
 // Status holds the packaged and upstream version for a package
 type Status struct {
-	Type             string  `json:"type"`
-	Package          string  `json:"name"`
-	Message          string  `json:"message"`
-	FlaggedOutOfDate bool    `json:"flagged,omitempty"`
-	Version          string  `json:"version,omitempty"`
-	Upstream         Version `json:"upstream,omitempty"`
-	Status           State   `json:"status"`
+	Type             string     `json:"type"`
+	Package          string     `json:"name"`
+	Message          string     `json:"message"`
+	FlaggedOutOfDate bool       `json:"flagged,omitempty"`
+	Version          string     `json:"version,omitempty"`
+	Upstream         Version    `json:"upstream,omitempty"`
+	Status           StatusType `json:"status"`
 }
 
-func (status State) color() string {
+func (status StatusType) color() string {
 	switch status {
 	case UpToDate:
 		return "\x1b[32m"
