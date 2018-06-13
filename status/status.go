@@ -1,4 +1,4 @@
-package upstream
+package status
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/simon04/aur-out-of-date/rfc7464"
+	"github.com/simon04/aur-out-of-date/upstream"
 )
 
 var statusWriter io.Writer = os.Stdout
@@ -27,13 +28,13 @@ const Unknown = StatusType("UNKNOWN")
 
 // Status holds the packaged and upstream version for a package
 type Status struct {
-	Type             string     `json:"type"`
-	Package          string     `json:"name"`
-	Message          string     `json:"message"`
-	FlaggedOutOfDate bool       `json:"flagged,omitempty"`
-	Version          string     `json:"version,omitempty"`
-	Upstream         Version    `json:"upstream,omitempty"`
-	Status           StatusType `json:"status"`
+	Type             string           `json:"type"`
+	Package          string           `json:"name"`
+	Message          string           `json:"message"`
+	FlaggedOutOfDate bool             `json:"flagged,omitempty"`
+	Version          string           `json:"version,omitempty"`
+	Upstream         upstream.Version `json:"upstream,omitempty"`
+	Status           StatusType       `json:"status"`
 }
 
 func (status StatusType) color() string {

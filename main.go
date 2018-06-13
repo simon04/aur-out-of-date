@@ -15,11 +15,12 @@ import (
 	"github.com/mikkeloscar/aur"
 	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 	"github.com/simon04/aur-out-of-date/pkg"
+	"github.com/simon04/aur-out-of-date/status"
 	"github.com/simon04/aur-out-of-date/upstream"
 	xdgbasedir "github.com/zchee/go-xdgbasedir"
 )
 
-var statistics upstream.Statistics
+var statistics status.Statistics
 
 var commandline struct {
 	user            string
@@ -31,10 +32,10 @@ var commandline struct {
 	flagOnAur       bool
 }
 
-func handlePackage(pkg pkg.Pkg) upstream.Status {
+func handlePackage(pkg pkg.Pkg) status.Status {
 
 	pkgVersion := pkg.Version()
-	status := upstream.Status{
+	s := status.Status{
 		Package:          pkg.Name(),
 		FlaggedOutOfDate: pkg.OutOfDate(),
 		Version:          pkgVersion.String(),
@@ -42,34 +43,34 @@ func handlePackage(pkg pkg.Pkg) upstream.Status {
 
 	upstreamVersion, err := upstream.VersionForPkg(pkg)
 	if err != nil {
-		status.Status = upstream.Unknown
-		status.Message = err.Error()
+		s.Status = status.Unknown
+		s.Message = err.Error()
 		statistics.Unknown++
-		return status
+		return s
 	}
 	upstreamCompleteVersion, err := pkgbuild.NewCompleteVersion(upstreamVersion.String())
 	if err != nil {
-		status.Status = upstream.Unknown
-		status.Message = fmt.Sprintf("Failed to parse upstream version: %v", err)
+		s.Status = status.Unknown
+		s.Message = fmt.Sprintf("Failed to parse upstream version: %v", err)
 		statistics.Unknown++
-		return status
+		return s
 	}
-	status.Upstream = upstreamVersion
+	s.Upstream = upstreamVersion
 
 	if pkg.OutOfDate() {
-		status.Status = upstream.FlaggedOutOfDate
-		status.Message = fmt.Sprintf("has been flagged out-of-date and should be updated to %v", upstreamVersion)
+		s.Status = status.FlaggedOutOfDate
+		s.Message = fmt.Sprintf("has been flagged out-of-date and should be updated to %v", upstreamVersion)
 		statistics.FlaggedOutOfDate++
 	} else if upstreamCompleteVersion.Newer(pkgVersion) {
-		status.Status = upstream.OutOfDate
-		status.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
+		s.Status = status.OutOfDate
+		s.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
 		statistics.OutOfDate++
 	} else {
-		status.Status = upstream.UpToDate
-		status.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
+		s.Status = status.UpToDate
+		s.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
 		statistics.UpToDate++
 	}
-	return status
+	return s
 }
 
 func flagOnAur(pkg pkg.Pkg, upstreamVersion upstream.Version) {
@@ -104,14 +105,14 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	for _, pkg := range packages {
 		isVcsPackage := strings.HasSuffix(pkg.Name(), "-git") || strings.HasSuffix(pkg.Name(), "-hg") || strings.HasSuffix(pkg.Name(), "-svn")
 		if vcsPackages == isVcsPackage {
-			status := handlePackage(pkg)
+			s := handlePackage(pkg)
 			if commandline.printJSON {
-				status.PrintJSONTextSequence()
+				s.PrintJSONTextSequence()
 			} else {
-				status.Print()
+				s.Print()
 			}
-			if status.Status == upstream.OutOfDate {
-				flagOnAur(pkg, status.Upstream)
+			if s.Status == status.OutOfDate {
+				flagOnAur(pkg, s.Upstream)
 			}
 		}
 	}
