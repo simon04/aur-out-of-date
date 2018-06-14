@@ -1,5 +1,9 @@
 # Release History
 
+## 1.4.0 (2018-06-14)
+
+* Exclude certain versions using config file
+
 ## 1.3.0 (2018-05-14)
 
 * GitHub: prefer tag_name over release name
