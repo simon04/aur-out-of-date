@@ -14,16 +14,19 @@ import (
 	"github.com/gregjones/httpcache/diskcache"
 	"github.com/mikkeloscar/aur"
 	pkgbuild "github.com/mikkeloscar/gopkgbuild"
+	"github.com/simon04/aur-out-of-date/config"
 	"github.com/simon04/aur-out-of-date/pkg"
 	"github.com/simon04/aur-out-of-date/status"
 	"github.com/simon04/aur-out-of-date/upstream"
 	xdgbasedir "github.com/zchee/go-xdgbasedir"
 )
 
+var conf *config.Config
 var statistics status.Statistics
 
 var commandline struct {
 	user            string
+	config          string
 	remote          bool
 	local           bool
 	includeVcsPkgs  bool
@@ -57,11 +60,17 @@ func handlePackage(pkg pkg.Pkg) status.Status {
 	}
 	s.Upstream = upstreamVersion
 
+	newer := upstreamCompleteVersion.Newer(pkgVersion)
+	ignored := conf.IsIgnored(pkg.Name(), s.Upstream)
 	if pkg.OutOfDate() {
 		s.Status = status.FlaggedOutOfDate
 		s.Message = fmt.Sprintf("has been flagged out-of-date and should be updated to %v", upstreamVersion)
 		statistics.FlaggedOutOfDate++
-	} else if upstreamCompleteVersion.Newer(pkgVersion) {
+	} else if newer && ignored {
+		s.Status = status.Unknown
+		s.Message = fmt.Sprintf("ignoring package upgrade to %v", upstreamVersion)
+		statistics.OutOfDate++
+	} else if newer {
 		s.Status = status.OutOfDate
 		s.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
 		statistics.OutOfDate++
@@ -119,7 +128,9 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 }
 
 func main() {
+	defaultConfigFile := path.Join(xdgbasedir.ConfigHome(), "aur-out-of-date", "config.json")
 	flag.StringVar(&commandline.user, "user", "", "AUR username")
+	flag.StringVar(&commandline.config, "config", defaultConfigFile, "Config file")
 	flag.BoolVar(&commandline.remote, "pkg", false, "AUR package name(s)")
 	flag.BoolVar(&commandline.local, "local", false, "Local .SRCINFO files")
 	flag.BoolVar(&commandline.includeVcsPkgs, "devel", false, "Check -git/-svn/-hg packages")
@@ -131,6 +142,13 @@ func main() {
 	// cache HTTP requests (RFC 7234)
 	cacheDir := path.Join(xdgbasedir.CacheHome(), "aur-out-of-date")
 	http.DefaultClient = httpcache.NewTransport(diskcache.New(cacheDir)).Client()
+
+	if c, err := config.FromFile(commandline.config); err != nil {
+		fmt.Fprintln(os.Stderr, "Failed to read config:", err)
+		os.Exit(1)
+	} else {
+		conf = c
+	}
 
 	if commandline.user != "" {
 		packages, err := aur.SearchByMaintainer(commandline.user)

@@ -18,10 +18,14 @@ Usage
 ```
 $ aur-out-of-date
 Usage of aur-out-of-date:
+  -config string
+        Config file (default "$XDG_CONFIG_HOME/aur-out-of-date/config.json")
   -devel
         Check -git/-svn/-hg packages
   -flag
         Flag out-of-date on AUR
+  -json
+        Generate JSON Text Sequences (RFC 7464)
   -local
         Local .SRCINFO files
   -pkg
@@ -79,6 +83,27 @@ For each package, the upstream URL and/or source URL is matched against supporte
 * `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
 * `search.cpan.org` or `search.mcpan.org` → https://fastapi.metacpan.org/v1/release/…
 * `rubygems.org` or `gems.rubyforge.org` → https://rubygems.org/api/v1/versions/….json
+
+Configuration
+-------------
+
+The tool reads a configuration file from `$XDG_CONFIG_HOME/aur-out-of-date/config.json`. This allows to ignore certain package versions from being reported as out-of-date. The string `"*"` acts as a placeholder for all versions.
+
+```json
+{
+  "ignore": {
+    "foo": ["*"],
+    "osmtogeojson": ["3.0.0-beta.3", "3.0.0-rc.1"]
+  }
+}
+```
+
+Running `aur-out-of-date -pkg osmtogeojson` yields:
+
+```
+[UNKNOWN] [osmtogeojson][3.0.0b3-2] ignoring package upgrade to 3.0.0-beta.3
+```
+
 
 Related projects
 ----------------
