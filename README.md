@@ -83,6 +83,7 @@ For each package, the upstream URL and/or source URL is matched against supporte
 * `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
 * `search.cpan.org` or `search.mcpan.org` → https://fastapi.metacpan.org/v1/release/…
 * `rubygems.org` or `gems.rubyforge.org` → https://rubygems.org/api/v1/versions/….json
+* `gitlab.com` or any self-hosted Gitlab instance → http://gitlab.com/api/v4/…/…/repository/tags (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITLAB_TOKEN` for [higher request limits](https://docs.gitlab.com/ee/api/#oauth2-tokens))
 
 Configuration
 -------------
