@@ -10,7 +10,7 @@ import (
 
 func mockGitLab() *gock.Response {
 	return gock.New("https://gitlab.com").
-		Get("/api/v4/projects/gitlab-org%2Fgitlab-ce/repository/tags").
+		Get("/api/v4/projects/gitlab-org/gitlab-ce/repository/tags").
 		Reply(http.StatusOK).
 		SetHeader("Content-Type", "application/json").
 		// Since it always returns a taglist, added 2 to the return
@@ -68,12 +68,12 @@ func TestGitlabceGitLabSource(t *testing.T) {
 	defer gock.Off()
 	mockGitLab()
 
-	p := pkg.New("gitlab-ce", "0", "https://gitlab.com/gitlab-org/gitlab-ce", "https://gitlab.com/gitlab-org/gitlab-ce/-/archive/v11.0.0-rc12/gitlab-ce-v11.0.0-rc12.tar.gz")
+	p := pkg.New("gitlab-ce", "0", "https://gitlab.com/gitlab-org/gitlab-ce", "https://gitlab.com/gitlab-org/gitlab-ce/-/archive/v11.0.0-rc13/gitlab-ce-v11.0.0-rc13.tar.gz")
 	version, err := VersionForPkg(p)
 	if err != nil {
 		t.Error(err)
 	}
-	if version.String() != "11.0.0-rc12" {
-		t.Errorf("Expecting version 11.0.0-rc12, but got %v", version)
+	if version.String() != "11.0.0-rc13" {
+		t.Errorf("Expecting version 11.0.0-rc13, but got %v", version)
 	}
 }
