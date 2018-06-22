@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"time"
 
 	"github.com/go-errors/errors"
 )
@@ -41,49 +40,9 @@ func (g gitLab) errorNotFound() error {
 	return errors.Errorf("No Gitlab release found for %s on %s", g, g.releasesURL())
 }
 
-// A Gitlab commit descriptor
-type gitLabCommit struct {
-	// The full commit hash
-	Id string `json:"id"`
-	// A short commit hash
-	ShortId string `json:"short_id"`
-	// The pretty commit message
-	Title string `json:"title"`
-	// When the commit was created
-	CreatedAt time.Time `json:"created_at"`
-	// An array of commit hashes, but always (??) a single element
-	ParentIds []string `json:"parent_ids"`
-	// The raw commit message (contains things like '\n')
-	Message string `json:"message"`
-	// AuthorXXX are from who actually wrote the code, useful if a patch was used
-	AuthorName   string    `json:"author_name"`
-	AuthorEmail  string    `json:"author_email"`
-	AuthoredDate time.Time `json:"authored_date"`
-	// CommiterXXX are from who accepted the commit into the branch
-	CommitterName  string    `json:"committer_name"`
-	CommitterEmail string    `json:"committer_email"`
-	CommittedDate  time.Time `json:"committed_date"`
-}
-
-// The api defines this as "null" unless release notes are added to the tag
-// With release notes added, these fields then exist
-type gitLabRelease struct {
-	TagName     string `json:"tag_name"`
-	Description string `json:"description"`
-}
-
 // Describes the individual tags in the returned taglist from the json call
 type gitLabTag struct {
-	// The actual tag's "version", whatever it was tagged as
 	Name string `json:"name"`
-	// The message added to the git tag
-	Message string `json:"message"`
-	// The commit hash
-	Target string `json:"target"`
-	// A field describing the commit the tag was tagged on
-	Commit gitLabCommit `json:"commit"`
-	// Note that this isn't like a Github release, and it can be "null"
-	Release gitLabRelease `json:"release"`
 }
 
 type gitLabMessage struct {
