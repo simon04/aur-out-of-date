@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-* Add Gitlab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24)
+* Add GitLab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24)
 
 ## 1.4.0 (2018-06-14)
 

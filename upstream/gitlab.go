@@ -10,7 +10,7 @@ import (
 	"github.com/go-errors/errors"
 )
 
-// Self-hosted Gitlab instances use different domain names
+// Self-hosted GitLab instances use different domain names
 type gitLab struct {
 	domain     string
 	owner      string
@@ -22,7 +22,7 @@ func (g gitLab) String() string {
 }
 
 func (g gitLab) encoded() string {
-	// Gitlab requires the owner + repository to be url-encoded together
+	// GitLab requires the owner + repository to be url-encoded together
 	return url.PathEscape(g.owner) + "%2F" + url.PathEscape(g.repository)
 }
 
@@ -33,11 +33,11 @@ func (g gitLab) releasesURL() string {
 }
 
 func (g gitLab) errorWrap(err error) error {
-	return errors.WrapPrefix(err, "Failed to obtain Gitlab tag for "+g.String()+" from "+g.releasesURL(), 0)
+	return errors.WrapPrefix(err, "Failed to obtain GitLab tag for "+g.String()+" from "+g.releasesURL(), 0)
 }
 
 func (g gitLab) errorNotFound() error {
-	return errors.Errorf("No Gitlab release found for %s on %s", g, g.releasesURL())
+	return errors.Errorf("No GitLab release found for %s on %s", g, g.releasesURL())
 }
 
 // Describes the individual tags in the returned taglist from the json call
@@ -52,7 +52,7 @@ type gitLabMessage struct {
 func (g gitLab) latestVersion() (Version, error) {
 	req, err := http.NewRequest("GET", g.releasesURL(), nil)
 
-	// Obtain Gitlab token for higher request limits, see https://docs.gitlab.com/ee/api/#oauth2-tokens
+	// Obtain GitLab token for higher request limits, see https://docs.gitlab.com/ee/api/#oauth2-tokens
 	token := os.Getenv("GITLAB_TOKEN")
 	if token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
@@ -80,7 +80,7 @@ func (g gitLab) latestVersion() (Version, error) {
 	}
 
 	// Can't get single tag, has to be an array
-	// NOTE: If Gitlab ever adds a "get newest tag" API call then change this
+	// NOTE: If GitLab ever adds a "get newest tag" API call then change this
 	var taglist []gitLabTag
 	err = dec.Decode(&taglist)
 	if err != nil {

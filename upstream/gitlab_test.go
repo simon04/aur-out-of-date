@@ -64,7 +64,7 @@ func mockGitLab() *gock.Response {
 		`)
 }
 
-func TestGitlabceGitLabSource(t *testing.T) {
+func TestGitLabceGitLabSource(t *testing.T) {
 	defer gock.Off()
 	mockGitLab()
 
