@@ -85,9 +85,11 @@ func (g gitLab) latestVersion() (Version, error) {
 	err = dec.Decode(&taglist)
 	if err != nil {
 		return "", g.errorWrap(err)
+	} else if len(taglist) > 0 {
 		// [0] will always be the newest, as its sorted by default
-	} else if taglist[0].Name != "" {
-		return Version(taglist[0].Name), nil
+		if taglist[0].Name != "" {
+			return Version(taglist[0].Name), nil
+		}
 	}
 	return "", g.errorNotFound()
 }
