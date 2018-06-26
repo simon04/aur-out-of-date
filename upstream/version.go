@@ -70,6 +70,12 @@ func forURL(url string) (Version, error) {
 		if len(match) > 0 {
 			return rubygem(match[1]).latestVersion()
 		}
+	case strings.Contains(url, "gitlab"):
+		// Example: https://gitlab.com/gitlab-org/gitlab-ce/-/archive/v11.0.0-rc7/gitlab-ce-v11.0.0-rc7.tar.gz
+		match := regexp.MustCompile("https?://([^/]+)/([^/]+)/([^/]+)(\\.git|/.*)?$").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return gitLab{match[1], match[2], match[3]}.latestVersion()
+		}
 	}
 	return "", errors.Errorf("No release found for %s", url)
 }

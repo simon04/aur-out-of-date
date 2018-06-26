@@ -1,5 +1,9 @@
 # Release History
 
+## Unreleased
+
+* Add GitLab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24)
+
 ## 1.4.0 (2018-06-14)
 
 * Exclude certain versions using config file
