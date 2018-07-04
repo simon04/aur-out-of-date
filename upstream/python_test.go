@@ -25,24 +25,18 @@ func mockPython() *gock.Response {
 }
 
 func TestPythonHttpieSource1(t *testing.T) {
-	defer gock.Off()
-	mockPython()
-
-	p := pkg.New("httpie", "0", "", "https://pypi.python.org/packages/source/h/httpie/httpie-0.9.9.tar.gz")
-	version, err := VersionForPkg(p)
-	if err != nil {
-		t.Error(err)
-	}
-	if version != "0.9.9" {
-		t.Errorf("Expecting version 0.9.9, but got %v", version)
-	}
+	testPythonHttpie(t, "https://pypi.python.org/packages/source/h/httpie/httpie-0.9.9.tar.gz")
 }
 
 func TestPythonHttpieSource2(t *testing.T) {
+	testPythonHttpie(t, "https://files.pythonhosted.org/packages/source/h/httpie/httpie-0.9.9.tar.gz")
+}
+
+func testPythonHttpie(t *testing.T, url string) {
 	defer gock.Off()
 	mockPython()
 
-	p := pkg.New("httpie", "0", "", "https://files.pythonhosted.org/packages/source/h/httpie/httpie-0.9.9.tar.gz")
+	p := pkg.New("httpie", "0", "", url)
 	version, err := VersionForPkg(p)
 	if err != nil {
 		t.Error(err)
