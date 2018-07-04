@@ -29,7 +29,12 @@ func TestPythonHttpieSource1(t *testing.T) {
 }
 
 func TestPythonHttpieSource2(t *testing.T) {
-	testPythonHttpie(t, "https://files.pythonhosted.org/packages/source/h/httpie/httpie-0.9.9.tar.gz")
+
+}
+
+func TestPythonHttpieSource3(t *testing.T) {
+	// URL from https://pypi.org/project/httpie/#files
+	testPythonHttpie(t, "https://files.pythonhosted.org/packages/28/93/4ebf2de4bc74bd517a27a600b2b23a5254a20f28e6e36fc876fd98f7a51b/httpie-0.9.9.tar.gz")
 }
 
 func testPythonHttpie(t *testing.T, url string) {
