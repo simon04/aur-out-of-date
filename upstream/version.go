@@ -45,12 +45,13 @@ func forURL(url string) (Version, error) {
 			return npm(match[1]).latestVersion()
 		}
 	case strings.Contains(url, "pypi.python.org"):
-		match := regexp.MustCompile("pypi.python.org/packages/source/[^/#.]+/([^/#.]+)/").FindStringSubmatch(url)
-		if len(match) > 0 {
-			return pypi(match[1]).latestVersion()
-		}
+		fallthrough
 	case strings.Contains(url, "files.pythonhosted.org"):
-		match := regexp.MustCompile("files.pythonhosted.org/packages/source/[^/#.]+/([^/#.]+)/").FindStringSubmatch(url)
+		fallthrough
+	case strings.Contains(url, "pypi.io"):
+		fallthrough
+	case strings.Contains(url, "pypi.org"):
+		match := regexp.MustCompile("/packages/source/[^/#.]+/([^/#.]+)/").FindStringSubmatch(url)
 		if len(match) > 0 {
 			return pypi(match[1]).latestVersion()
 		}
