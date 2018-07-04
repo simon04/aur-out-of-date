@@ -5,6 +5,7 @@
 * Add GitLab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24)
 * Python: add support for pypi.org and pypi.io domains
 * Python: add support for download URLs containing hashes
+* Python: update API URL to pypi.org
 
 ## 1.4.0 (2018-06-14)
 

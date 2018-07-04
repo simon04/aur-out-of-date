@@ -9,7 +9,7 @@ import (
 )
 
 func mockPython() *gock.Response {
-	return gock.New("https://pypi.python.org/").
+	return gock.New("https://pypi.org/").
 		Get("/pypi/httpie/json").
 		Reply(http.StatusOK).
 		SetHeader("Content-Type", "application/json").

@@ -15,7 +15,7 @@ type pypiResponse struct {
 type pypi string
 
 func (p pypi) releasesURL() string {
-	return fmt.Sprintf("https://pypi.python.org/pypi/%s/json", p)
+	return fmt.Sprintf("https://pypi.org/pypi/%s/json", p)
 }
 
 func (p pypi) latestVersion() (Version, error) {
