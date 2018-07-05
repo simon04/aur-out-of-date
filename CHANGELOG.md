@@ -1,6 +1,6 @@
 # Release History
 
-## Unreleased
+## 1.5.0 (2018-07-05)
 
 * Add GitLab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24)
 * Python: add support for pypi.org and pypi.io domains
