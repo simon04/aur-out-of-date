@@ -10,6 +10,8 @@ Installation
 $ go get github.com/simon04/aur-out-of-date
 ```
 
+Since Go modules are used, at least [Go 1.11](https://golang.org/doc/go1.11) is required.
+
 The tool is also available in AUR: [aur-out-of-date](https://aur.archlinux.org/packages/aur-out-of-date/)
 
 Usage
