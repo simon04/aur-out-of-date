@@ -55,7 +55,7 @@ func forURL(url string) (Version, error) {
 		if len(match) > 0 {
 			return pypi(match[1]).latestVersion()
 		}
-		match = regexp.MustCompile("/([^/#.]+)-[0-9.]+.tar.gz$").FindStringSubmatch(url)
+		match = regexp.MustCompile("/([^/#.]+)-[0-9.]+(post.)?.tar.gz$").FindStringSubmatch(url)
 		if len(match) > 0 {
 			return pypi(match[1]).latestVersion()
 		}
