@@ -1,5 +1,10 @@
 # Release History
 
+## 2.0.0 (2018-09-18)
+
+* Use Go modules, at least [Go 1.11](https://golang.org/doc/go1.11) is required
+* Python: add support for `post*` version suffixes
+
 ## 1.5.0 (2018-07-05)
 
 * Add GitLab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24)
