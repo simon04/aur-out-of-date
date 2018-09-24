@@ -81,6 +81,12 @@ func forURL(url string) (Version, error) {
 		if len(match) > 0 {
 			return gitLab{match[1], match[2], match[3]}.latestVersion()
 		}
+	case strings.Contains(url, "debian.org"):
+		// Example: http://ftp.debian.org/debian/pool/main/p/python3-defaults/python3-defaults_3.6.6-1.tar.gz
+		match := regexp.MustCompile("/debian/pool/(?:contrib|main|non-free)/[a-z]{1,4}/([^/#.]+)/[^/#]+(?:.tar|.deb)").FindStringSubmatch(url)
+		if len(match) > 0 {
+			return debian(match[1]).latestVersion()
+		}
 	}
 	return "", errors.Errorf("No release found for %s", url)
 }
