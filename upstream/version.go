@@ -16,6 +16,7 @@ type Version string
 // String returns a sanitized version string
 func (v Version) String() string {
 	s := string(v)
+	s = strings.TrimLeft(s, "release/")
 	s = strings.TrimLeft(s, "v")
 	return s
 }
