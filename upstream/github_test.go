@@ -10,21 +10,32 @@ import (
 
 func mockGitHub() *gock.Response {
 	return gock.New("https://api.github.com/").
-		Get("/repos/gogits/gogs/releases/latest").
+		Get("/repos/gogits/gogs/tags").
 		Reply(http.StatusOK).
 		SetHeader("Content-Type", "application/atom+xml").
 		BodyString(`
-			{
-				"url": "https://api.github.com/repos/gogits/gogs/releases/8625798",
-				"id": 8625798,
-				"tag_name": "v0.11.34",
-				"target_commitish": "master",
-				"name": "v0.11.34",
-				"draft": false,
-				"prerelease": false,
-				"created_at": "2017-11-22T19:46:14Z",
-				"published_at": "2017-11-22T19:52:48Z"
-			}			
+			[
+				{
+					"name": "v0.11.34",
+					"zipball_url": "https://api.github.com/repos/gogs/gogs/zipball/v0.11.34",
+					"tarball_url": "https://api.github.com/repos/gogs/gogs/tarball/v0.11.34",
+					"commit": {
+						"sha": "6f2347fc71f17b5703a9b1f383a2d3451f88b741",
+						"url": "https://api.github.com/repos/gogs/gogs/commits/6f2347fc71f17b5703a9b1f383a2d3451f88b741"
+					},
+					"node_id": "MDM6UmVmMTY3NTI2MjA6djAuMTEuMzQ="
+				},
+				{
+					"name": "v0.11.33",
+					"zipball_url": "https://api.github.com/repos/gogs/gogs/zipball/v0.11.33",
+					"tarball_url": "https://api.github.com/repos/gogs/gogs/tarball/v0.11.33",
+					"commit": {
+						"sha": "b752fe680811119954ccef051e6f3b3e2a04c2e8",
+						"url": "https://api.github.com/repos/gogs/gogs/commits/b752fe680811119954ccef051e6f3b3e2a04c2e8"
+					},
+					"node_id": "MDM6UmVmMTY3NTI2MjA6djAuMTEuMzM="
+				}
+			]
 			`)
 }
 
