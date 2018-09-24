@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/go-errors/errors"
 )
@@ -19,26 +18,21 @@ func (g gitHub) String() string {
 	return g.owner + "/" + g.repository
 }
 
-func (g gitHub) releasesURL() string {
-	// API documentation: https://developer.github.com/v3/repos/releases/
-	return fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", g.owner, g.repository)
+func (g gitHub) tagsURL() string {
+	// API documentation: https://developer.github.com/v3/repos/#list-tags
+	return fmt.Sprintf("https://api.github.com/repos/%s/%s/tags", g.owner, g.repository)
 }
 
 func (g gitHub) errorWrap(err error) error {
-	return errors.WrapPrefix(err, "Failed to obtain GitHub release for "+g.String()+" from "+g.releasesURL(), 0)
+	return errors.WrapPrefix(err, "Failed to obtain GitHub tag for "+g.String()+" from "+g.tagsURL(), 0)
 }
 
 func (g gitHub) errorNotFound() error {
-	return errors.Errorf("No GitHub release found for %s on %s", g, g.releasesURL())
+	return errors.Errorf("No GitHub tag found for %s on %s", g, g.tagsURL())
 }
 
-type gitHubRelease struct {
-	URL         string    `json:"url"`
+type gitHubTag struct {
 	Name        string    `json:"name"`
-	TagName     string    `json:"tag_name"`
-	Prerelease  bool      `json:"prerelease"`
-	Draft       bool      `json:"draft"`
-	PublishedAt time.Time `json:"published_at"`
 }
 
 type gitHubMessage struct {
@@ -47,7 +41,7 @@ type gitHubMessage struct {
 }
 
 func (g gitHub) latestVersion() (Version, error) {
-	req, err := http.NewRequest("GET", g.releasesURL(), nil)
+	req, err := http.NewRequest("GET", g.tagsURL(), nil)
 
 	// Obtain GitHub token for higher request limits, see https://developer.github.com/v3/#rate-limiting
 	token := os.Getenv("GITHUB_TOKEN")
@@ -76,18 +70,14 @@ func (g gitHub) latestVersion() (Version, error) {
 		return "", g.errorNotFound()
 	}
 
-	var release gitHubRelease
-	err = dec.Decode(&release)
+	var taglist []gitHubTag
+	err = dec.Decode(&taglist)
 	if err != nil {
 		return "", g.errorWrap(err)
-	} else if release.Prerelease {
-		return "", errors.Errorf("Ignoring GitHub pre-release %s for %s", release.Name, g.String())
-	} else if release.Draft {
-		return "", errors.Errorf("Ignoring GitHub release draft %s for %s", release.Name, g.String())
-	} else if release.TagName != "" {
-		return Version(release.TagName), nil
-	} else if release.Name != "" {
-		return Version(release.Name), nil
+	} else if len(taglist) > 0 {
+		if taglist[0].Name != "" {
+			return Version(taglist[0].Name), nil
+		}
 	}
 	return "", g.errorNotFound()
 }
