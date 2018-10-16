@@ -1,5 +1,11 @@
 # Release History
 
+## 2.1.0 (2018-10-16)
+
+* Add Debian support, ref [#29](https://github.com/simon04/aur-out-of-date/pull/29) by [@z3ntu](https://github.com/z3ntu)
+* Clean version string: strip `releases/` prefix, ref [#31](https://github.com/simon04/aur-out-of-date/pull/31) by [@z3ntu](https://github.com/z3ntu)
+* Handle `-bzr` as VCS packages, ref [#31](https://github.com/simon04/aur-out-of-date/pull/31) by [@z3ntu](https://github.com/z3ntu)
+
 ## 2.0.0 (2018-09-18)
 
 * Use Go modules, at least [Go 1.11](https://golang.org/doc/go1.11) is required
@@ -7,7 +13,7 @@
 
 ## 1.5.0 (2018-07-05)
 
-* Add GitLab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24)
+* Add GitLab support, ref [#24](https://github.com/simon04/aur-out-of-date/issues/24) by [@sum01](https://github.com/sum01)
 * Python: add support for pypi.org and pypi.io domains
 * Python: add support for download URLs containing hashes
 * Python: update API URL to pypi.org
