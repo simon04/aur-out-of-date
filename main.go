@@ -18,7 +18,6 @@ import (
 	"github.com/simon04/aur-out-of-date/pkg"
 	"github.com/simon04/aur-out-of-date/status"
 	"github.com/simon04/aur-out-of-date/upstream"
-	xdgbasedir "github.com/zchee/go-xdgbasedir"
 )
 
 var conf *config.Config
@@ -128,7 +127,8 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 }
 
 func main() {
-	defaultConfigFile := path.Join(xdgbasedir.ConfigHome(), "aur-out-of-date", "config.json")
+	configDir, _ := os.UserConfigDir()
+	defaultConfigFile := path.Join(configDir, "aur-out-of-date", "config.json")
 	flag.StringVar(&commandline.user, "user", "", "AUR username")
 	flag.StringVar(&commandline.config, "config", defaultConfigFile, "Config file")
 	flag.BoolVar(&commandline.remote, "pkg", false, "AUR package name(s)")
@@ -140,7 +140,8 @@ func main() {
 	flag.Parse()
 
 	// cache HTTP requests (RFC 7234)
-	cacheDir := path.Join(xdgbasedir.CacheHome(), "aur-out-of-date")
+	cacheDir, _ := os.UserCacheDir()
+	cacheDir = path.Join(cacheDir, "aur-out-of-date")
 	http.DefaultClient = httpcache.NewTransport(diskcache.New(cacheDir)).Client()
 
 	if c, err := config.FromFile(commandline.config); err != nil {

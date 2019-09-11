@@ -9,5 +9,6 @@ require (
 	github.com/mikkeloscar/gopkgbuild v0.0.0-20180514210807-7b0e7c63b22e
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
-	github.com/zchee/go-xdgbasedir v1.0.0
 )
+
+go 1.13

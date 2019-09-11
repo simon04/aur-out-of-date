@@ -14,5 +14,3 @@ github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32/go.mod h1:9wM+0iRr9ahx58uYLpLIr5fm8diHn0JbqRycJi6w0Ms=
 github.com/peterbourgon/diskv v2.0.1+incompatible h1:UBdAOUP5p4RWqPBg048CAvpKN+vxiaj6gdUUzhl4XmI=
 github.com/peterbourgon/diskv v2.0.1+incompatible/go.mod h1:uqqh8zWWbv1HBMNONnaR/tNboyR3/BZd58JJSHlUSCU=
-github.com/zchee/go-xdgbasedir v1.0.0 h1:xZoiPNVXoaIvQw34bJWcuv6uIW0fXJqW691OG9VaI3g=
-github.com/zchee/go-xdgbasedir v1.0.0/go.mod h1:Ta5nXXeucstQZw/DpFneOcG3OF8i3pxPTqda2w+nyc8=
