@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-
-	"github.com/go-errors/errors"
 )
 
 // Self-hosted GitLab instances use different domain names
@@ -33,11 +31,11 @@ func (g gitLab) releasesURL() string {
 }
 
 func (g gitLab) errorWrap(err error) error {
-	return errors.WrapPrefix(err, "Failed to obtain GitLab tag for "+g.String()+" from "+g.releasesURL(), 0)
+	return fmt.Errorf("Failed to obtain GitLab tag for %s from %s: %w", g.String(), g.releasesURL(), err)
 }
 
 func (g gitLab) errorNotFound() error {
-	return errors.Errorf("No GitLab release found for %s on %s", g, g.releasesURL())
+	return fmt.Errorf("No GitLab release found for %s on %s", g, g.releasesURL())
 }
 
 // Describes the individual tags in the returned taglist from the json call
@@ -72,7 +70,7 @@ func (g gitLab) latestVersion() (Version, error) {
 		var message gitLabMessage
 		err = dec.Decode(&message)
 		if err == nil && message.Message != "" {
-			err = errors.Wrap(message.Message, 0)
+			err = fmt.Errorf("%s", message.Message)
 		}
 		return "", g.errorWrap(err)
 	} else if resp.StatusCode == http.StatusNotFound {

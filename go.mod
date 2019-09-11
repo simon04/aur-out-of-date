@@ -1,7 +1,6 @@
 module github.com/simon04/aur-out-of-date
 
 require (
-	github.com/go-errors/errors v1.0.0
 	github.com/google/btree v0.0.0-20180124185431-e89373fe6b4a // indirect
 	github.com/gregjones/httpcache v0.0.0-20171119193500-2bcd89a1743f
 	github.com/h2non/gock v1.0.7

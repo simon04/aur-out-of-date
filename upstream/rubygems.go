@@ -3,8 +3,6 @@ package upstream
 import (
 	"fmt"
 	"time"
-
-	"github.com/go-errors/errors"
 )
 
 type rubygemsVersions []struct {
@@ -33,7 +31,7 @@ func (g rubygem) releasesURL() string {
 func (g rubygem) latestVersion() (Version, error) {
 	var versions rubygemsVersions
 	if err := fetchJSON(g, &versions); err != nil || len(versions) == 0 {
-		return "", errors.WrapPrefix(err, "No RubyGems release found for "+string(g), 0)
+		return "", fmt.Errorf("No RubyGems release found for %v: %w", g, err)
 	}
 	return Version(versions[0].Number), nil
 }

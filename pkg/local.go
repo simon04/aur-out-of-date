@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/go-errors/errors"
+	"fmt"
 	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 )
 
@@ -11,7 +11,7 @@ func NewLocalPkgs(paths []string) ([]Pkg, error) {
 	for _, path := range paths {
 		pkg, err := pkgbuild.ParseSRCINFO(path)
 		if err != nil {
-			return nil, errors.WrapPrefix(err, "Failed to parse "+path, 0)
+			return nil, fmt.Errorf("Failed to parse %s: %w", path, err)
 		}
 		r = append(r, &localPkg{pkg})
 	}

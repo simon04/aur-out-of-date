@@ -2,8 +2,6 @@ package upstream
 
 import (
 	"fmt"
-
-	"github.com/go-errors/errors"
 )
 
 type cpanRelease struct {
@@ -20,7 +18,7 @@ func (p cpan) releasesURL() string {
 func (p cpan) latestVersion() (Version, error) {
 	var info cpanRelease
 	if err := fetchJSON(p, &info); err != nil || info.Version == "" {
-		return "", errors.WrapPrefix(err, "No CPAN release found for "+string(p), 0)
+		return "", fmt.Errorf("No CPAN release found for %v: %w", p, err)
 	}
 	return Version(info.Version), nil
 }

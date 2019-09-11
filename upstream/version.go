@@ -2,12 +2,11 @@ package upstream
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/simon04/aur-out-of-date/pkg"
 	"net/http"
 	"regexp"
 	"strings"
-
-	"github.com/go-errors/errors"
-	"github.com/simon04/aur-out-of-date/pkg"
 )
 
 // Version represents the upstream version of a software project
@@ -89,7 +88,7 @@ func forURL(url string) (Version, error) {
 			return debian(match[1]).latestVersion()
 		}
 	}
-	return "", errors.Errorf("No release found for %s", url)
+	return "", fmt.Errorf("No release found for %s", url)
 }
 
 // VersionForPkg determines the upstream version for the given package
@@ -100,12 +99,12 @@ func VersionForPkg(pkg pkg.Pkg) (Version, error) {
 	}
 	sources, err := pkg.Sources()
 	if err != nil {
-		return "", errors.WrapPrefix(err, "Failed to obtain sources for "+pkg.Name(), 0)
+		return "", fmt.Errorf("Failed to obtain sources for %s: %w", pkg.Name(), err)
 	}
 	if len(sources) > 0 {
 		return forURL(sources[0])
 	}
-	return "", errors.WrapPrefix(err, "No release found for "+pkg.Name(), 0)
+	return "", fmt.Errorf("No release found for %s: %w", pkg.Name(), err)
 }
 
 type releasesAPI interface {

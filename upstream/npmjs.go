@@ -3,8 +3,6 @@ package upstream
 import (
 	"fmt"
 	"net/url"
-
-	"github.com/go-errors/errors"
 )
 
 type npmDistTags struct {
@@ -21,7 +19,7 @@ func (n npm) releasesURL() string {
 func (n npm) latestVersion() (Version, error) {
 	var distTags npmDistTags
 	if err := fetchJSON(n, &distTags); err != nil || distTags.Latest == "" {
-		return "", errors.WrapPrefix(err, "No npm release found for "+string(n), 0)
+		return "", fmt.Errorf("No npm release found for %v: %w", n, err)
 	}
 	return Version(distTags.Latest), nil
 }

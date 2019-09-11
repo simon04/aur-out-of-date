@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
-
-	"github.com/go-errors/errors"
 )
 
 type debianVersion struct {
@@ -26,7 +24,7 @@ func (d debian) releasesURL() string {
 func (d debian) latestVersion() (Version, error) {
 	var res debianResponse
 	if err := fetchJSON(d, &res); err != nil {
-		return "", errors.WrapPrefix(err, "No debian release found for "+string(d), 0)
+		return "", fmt.Errorf("No debian release found for %v: %w", d, err)
 	}
 	match := regexp.MustCompile("([^-]+)[-|~]").FindStringSubmatch(res.Versions[0].Version)
 	if len(match) > 0 {

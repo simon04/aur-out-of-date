@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/go-errors/errors"
 )
 
 type gitHub struct {
@@ -25,11 +23,11 @@ func (g gitHub) releasesURL() string {
 }
 
 func (g gitHub) errorWrap(err error) error {
-	return errors.WrapPrefix(err, "Failed to obtain GitHub release for "+g.String()+" from "+g.releasesURL(), 0)
+	return fmt.Errorf("Failed to obtain GitHub release for %s from %s: %w", g.String(), g.releasesURL(), err)
 }
 
 func (g gitHub) errorNotFound() error {
-	return errors.Errorf("No GitHub release found for %s on %s", g, g.releasesURL())
+	return fmt.Errorf("No GitHub release found for %s on %s", g, g.releasesURL())
 }
 
 type gitHubRelease struct {
@@ -69,7 +67,7 @@ func (g gitHub) latestVersion() (Version, error) {
 		var message gitHubMessage
 		err = dec.Decode(&message)
 		if err == nil && message.Message != "" {
-			err = errors.Wrap(message.Message, 0)
+			err = fmt.Errorf("%s", message.Message)
 		}
 		return "", g.errorWrap(err)
 	} else if resp.StatusCode == http.StatusNotFound {
@@ -81,9 +79,9 @@ func (g gitHub) latestVersion() (Version, error) {
 	if err != nil {
 		return "", g.errorWrap(err)
 	} else if release.Prerelease {
-		return "", errors.Errorf("Ignoring GitHub pre-release %s for %s", release.Name, g.String())
+		return "", fmt.Errorf("Ignoring GitHub pre-release %s for %s", release.Name, g.String())
 	} else if release.Draft {
-		return "", errors.Errorf("Ignoring GitHub release draft %s for %s", release.Name, g.String())
+		return "", fmt.Errorf("Ignoring GitHub release draft %s for %s", release.Name, g.String())
 	} else if release.TagName != "" {
 		return Version(release.TagName), nil
 	} else if release.Name != "" {
