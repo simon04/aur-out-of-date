@@ -1,5 +1,7 @@
 # Release History
 
+* Require [Go 1.13](https://golang.org/doc/go1.13)
+
 ## 2.1.0 (2018-10-16)
 
 * Add Debian support, ref [#29](https://github.com/simon04/aur-out-of-date/pull/29) by [@z3ntu](https://github.com/z3ntu)
