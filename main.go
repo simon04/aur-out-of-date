@@ -75,10 +75,14 @@ func handlePackage(pkg pkg.Pkg) status.Status {
 		s.Status = status.OutOfDate
 		s.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
 		statistics.OutOfDate++
-	} else {
+	} else if upstreamCompleteVersion.Equal(pkgVersion) {
 		s.Status = status.UpToDate
 		s.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
 		statistics.UpToDate++
+	} else {
+		s.Status = status.Unknown
+		s.Message = fmt.Sprintf("upstream version is %v", upstreamVersion)
+		statistics.Unknown++
 	}
 	return s
 }
