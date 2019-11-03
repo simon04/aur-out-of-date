@@ -8,6 +8,7 @@ import (
 type Pkg interface {
 	Name() string
 	Version() *pkgbuild.CompleteVersion
+	LocalPKGBUILD() string
 	URL() string
 	Sources() ([]string, error)
 	OutOfDate() bool
@@ -23,5 +24,5 @@ func New(name, version, url string, sources ...string) Pkg {
 		URL:      url,
 		Source:   sources,
 	}
-	return &localPkg{&pkg}
+	return &localPkg{pkg: &pkg, path: ""}
 }

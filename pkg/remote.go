@@ -31,6 +31,10 @@ func (p *remotePkg) Version() *pkgbuild.CompleteVersion {
 	return version
 }
 
+func (p *remotePkg) LocalPKGBUILD() string {
+	return ""
+}
+
 func (p *remotePkg) URL() string {
 	return p.pkg.URL
 }

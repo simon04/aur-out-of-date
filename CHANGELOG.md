@@ -1,6 +1,7 @@
 # Release History
 
 * Require [Go 1.13](https://golang.org/doc/go1.13)
+* Optionally update `pkgver`/`pkgrel` in local `PKGBUILD` files (specify `-update` flag)
 
 ## 2.1.0 (2018-10-16)
 

@@ -34,6 +34,8 @@ Usage of aur-out-of-date:
         AUR package name(s)
   -statistics
         Print summary statistics
+  -update
+        Update pkgver/pkgrel in local PKGBUILD files
   -user string
         AUR username
 ```

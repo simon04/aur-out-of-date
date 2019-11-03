@@ -2,6 +2,8 @@ package pkg
 
 import (
 	"fmt"
+	"strings"
+
 	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 )
 
@@ -13,13 +15,14 @@ func NewLocalPkgs(paths []string) ([]Pkg, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Failed to parse %s: %w", path, err)
 		}
-		r = append(r, &localPkg{pkg})
+		r = append(r, &localPkg{pkg, path})
 	}
 	return r, nil
 }
 
 type localPkg struct {
-	pkg *pkgbuild.PKGBUILD
+	pkg  *pkgbuild.PKGBUILD
+	path string
 }
 
 func (p *localPkg) Name() string {
@@ -32,6 +35,10 @@ func (p *localPkg) Version() *pkgbuild.CompleteVersion {
 		Version: p.pkg.Pkgver,
 		Pkgrel:  p.pkg.Pkgrel,
 	}
+}
+
+func (p *localPkg) LocalPKGBUILD() string {
+	return strings.Replace(p.path, ".SRCINFO", "PKGBUILD", 1)
 }
 
 func (p *localPkg) URL() string {
