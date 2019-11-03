@@ -3,10 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"path"
 	"sort"
 	"strings"
@@ -14,6 +12,7 @@ import (
 	"github.com/gregjones/httpcache"
 	"github.com/gregjones/httpcache/diskcache"
 	"github.com/mikkeloscar/aur"
+	"github.com/simon04/aur-out-of-date/action"
 	"github.com/simon04/aur-out-of-date/config"
 	"github.com/simon04/aur-out-of-date/pkg"
 	"github.com/simon04/aur-out-of-date/status"
@@ -58,71 +57,6 @@ func handlePackage(pkg pkg.Pkg) status.Status {
 	return s
 }
 
-func promptYesNo() bool {
-	var response string
-	chars, err := fmt.Scanln(&response)
-	if err != nil || chars == 0 {
-		return false
-	}
-	if response != "y" && response != "Y" {
-		return false
-	}
-	return true
-}
-
-func flagOnAur(pkg pkg.Pkg, upstreamVersion upstream.Version) {
-	if !commandline.flagOnAur {
-		return
-	}
-	fmt.Printf("Should the package %s be flagged out-of-date? [y/N] ", pkg.Name())
-	if !promptYesNo() {
-		return
-	}
-	fmt.Printf("Flagging package %s out-of-date ...\n", pkg.Name())
-	comment := fmt.Sprintf("Version %s is out. #simon04/aur-out-of-date", upstreamVersion)
-	cmd := exec.Command("ssh", "aur@aur.archlinux.org", "flag", pkg.Name(), "\""+comment+"\"")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("Failed to flag out-of-date (running \"%v\"): %v\n%s\n", strings.Join(cmd.Args, "\" \""), err, output)
-	} else {
-		fmt.Printf("%s", output)
-	}
-}
-
-func updatePKGBUILD(pkg pkg.Pkg, upstreamVersion upstream.Version) {
-	file := pkg.LocalPKGBUILD()
-	if !commandline.updatePKGBUILD || file == "" {
-		return
-	}
-	input, err := ioutil.ReadFile(file)
-	if err != nil {
-		fmt.Printf("updatePKGBUILD: failed to read file %s: %v\n", file, err)
-	}
-
-	lines := strings.Split(string(input), "\n")
-
-	for i, line := range lines {
-		if strings.HasPrefix(line, "pkgver=") {
-			lineUpdate := strings.Replace(line, string(pkg.Version().Version), upstreamVersion.String(), 1)
-			fmt.Printf("--- a/%s\n", file)
-			fmt.Printf("+++ b/%s\n", file)
-			fmt.Printf("-%s\n", line)
-			fmt.Printf("+%s\n", lineUpdate)
-			fmt.Printf("Should the package %s be updated to version %s? [y/N] ", pkg.Name(), upstreamVersion)
-			if !promptYesNo() {
-				return
-			}
-			lines[i] = lineUpdate
-		} else if strings.HasPrefix(line, "pkgrel=") {
-			lines[i] = "pkgrel=1"
-		}
-	}
-	err = ioutil.WriteFile(file, []byte(strings.Join(lines, "\n")), 0644)
-	if err != nil {
-		fmt.Printf("updatePKGBUILD: failed to write file %s: %v\n", file, err)
-	}
-}
-
 func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	if err != nil {
 		panic(err)
@@ -137,9 +71,11 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 			} else {
 				s.Print()
 			}
-			if s.Status == status.OutOfDate {
-				flagOnAur(pkg, s.Upstream)
-				updatePKGBUILD(pkg, s.Upstream)
+			if s.Status == status.OutOfDate && commandline.flagOnAur {
+				action.FlagOnAur(pkg, s.Upstream)
+			}
+			if s.Status == status.OutOfDate && commandline.updatePKGBUILD {
+				action.UpdatePKGBUILD(pkg, s.Upstream)
 			}
 		}
 	}
