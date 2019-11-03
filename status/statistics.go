@@ -19,6 +19,20 @@ type Statistics struct {
 	Unknown          int    `json:"unknown"`
 }
 
+// Update the statistics with another status
+func (s *Statistics) Update(status StatusType) {
+	switch status {
+	case UpToDate:
+		s.UpToDate++
+	case FlaggedOutOfDate:
+		s.FlaggedOutOfDate++
+	case OutOfDate:
+		s.OutOfDate++
+	case Unknown:
+		s.Unknown++
+	}
+}
+
 // Print displays the statistics on the console
 func (s *Statistics) Print() {
 	fmt.Fprintln(statisticsWriter)

@@ -14,7 +14,6 @@ import (
 	"github.com/gregjones/httpcache"
 	"github.com/gregjones/httpcache/diskcache"
 	"github.com/mikkeloscar/aur"
-	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 	"github.com/simon04/aur-out-of-date/config"
 	"github.com/simon04/aur-out-of-date/pkg"
 	"github.com/simon04/aur-out-of-date/status"
@@ -52,38 +51,10 @@ func handlePackage(pkg pkg.Pkg) status.Status {
 		statistics.Unknown++
 		return s
 	}
-	upstreamCompleteVersion, err := pkgbuild.NewCompleteVersion(upstreamVersion.String())
-	if err != nil {
-		s.Status = status.Unknown
-		s.Message = fmt.Sprintf("Failed to parse upstream version: %v", err)
-		statistics.Unknown++
-		return s
-	}
-	s.Upstream = upstreamVersion
 
-	newer := upstreamCompleteVersion.Newer(pkgVersion)
-	ignored := conf.IsIgnored(pkg.Name(), s.Upstream)
-	if pkg.OutOfDate() {
-		s.Status = status.FlaggedOutOfDate
-		s.Message = fmt.Sprintf("has been flagged out-of-date and should be updated to %v", upstreamVersion)
-		statistics.FlaggedOutOfDate++
-	} else if newer && ignored {
-		s.Status = status.Unknown
-		s.Message = fmt.Sprintf("ignoring package upgrade to %v", upstreamVersion)
-		statistics.OutOfDate++
-	} else if newer {
-		s.Status = status.OutOfDate
-		s.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
-		statistics.OutOfDate++
-	} else if upstreamCompleteVersion.Equal(pkgVersion) {
-		s.Status = status.UpToDate
-		s.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
-		statistics.UpToDate++
-	} else {
-		s.Status = status.Unknown
-		s.Message = fmt.Sprintf("upstream version is %v", upstreamVersion)
-		statistics.Unknown++
-	}
+	s.Ignored = conf.IsIgnored(pkg.Name(), upstreamVersion)
+	s.Compare(upstreamVersion)
+	statistics.Update(s.Status)
 	return s
 }
 

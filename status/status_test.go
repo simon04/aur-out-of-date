@@ -3,17 +3,36 @@ package status
 import (
 	"bytes"
 	"testing"
+
+	"github.com/simon04/aur-out-of-date/upstream"
 )
 
 var s = Status{
-	Package:  "spectre-meltdown-checker",
-	Message:  "matches upstream version 0.35",
-	Version:  "0.35-1",
-	Upstream: "0.35",
-	Status:   UpToDate,
+	Package: "spectre-meltdown-checker",
+	Version: "0.35-1",
+}
+
+func TestCompare(t *testing.T) {
+	s.Compare(upstream.Version("0.35"))
+	if s.Status != UpToDate {
+		t.Errorf("Expecting status to be %s", UpToDate)
+	}
+	s.Compare(upstream.Version("0.37"))
+	if s.Status != OutOfDate {
+		t.Errorf("Expecting status to be %s", OutOfDate)
+	}
+	s.Compare(upstream.Version("0.30"))
+	if s.Status != Unknown {
+		t.Errorf("Expecting status to be %s", Unknown)
+	}
+	s.Compare(upstream.Version("foo"))
+	if s.Status != Unknown {
+		t.Errorf("Expecting status to be %s", Unknown)
+	}
 }
 
 func TestStatusOutput(t *testing.T) {
+	s.Compare(upstream.Version("0.35"))
 	out := bytes.NewBuffer(nil)
 	statusWriter = out
 	s.Print()
@@ -25,6 +44,7 @@ func TestStatusOutput(t *testing.T) {
 }
 
 func TestStatusJSONOutput(t *testing.T) {
+	s.Compare(upstream.Version("0.35"))
 	out := bytes.NewBuffer(nil)
 	statusWriter = out
 	s.PrintJSONTextSequence()

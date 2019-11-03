@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	pkgbuild "github.com/mikkeloscar/gopkgbuild"
 	"github.com/simon04/aur-out-of-date/rfc7464"
 	"github.com/simon04/aur-out-of-date/upstream"
 )
@@ -32,9 +33,46 @@ type Status struct {
 	Package          string           `json:"name"`
 	Message          string           `json:"message"`
 	FlaggedOutOfDate bool             `json:"flagged,omitempty"`
+	Ignored          bool             `json:"ignored,omitempty"`
 	Version          string           `json:"version,omitempty"`
 	Upstream         upstream.Version `json:"upstream,omitempty"`
 	Status           StatusType       `json:"status"`
+}
+
+// Compare to upstream version and set message and status accordingly
+func (s *Status) Compare(upstreamVersion upstream.Version) {
+	pkgVersion, err := pkgbuild.NewCompleteVersion(s.Version)
+	if err != nil {
+		s.Status = Unknown
+		s.Message = fmt.Sprintf("Failed to parse pkg version: %v", err)
+		return
+	}
+
+	upstreamCompleteVersion, err := pkgbuild.NewCompleteVersion(upstreamVersion.String())
+	if err != nil {
+		s.Status = Unknown
+		s.Message = fmt.Sprintf("Failed to parse upstream version: %v", err)
+		return
+	}
+	s.Upstream = upstreamVersion
+
+	newer := upstreamCompleteVersion.Newer(pkgVersion)
+	if s.FlaggedOutOfDate {
+		s.Status = FlaggedOutOfDate
+		s.Message = fmt.Sprintf("has been flagged out-of-date and should be updated to %v", upstreamVersion)
+	} else if newer && s.Ignored {
+		s.Status = Unknown
+		s.Message = fmt.Sprintf("ignoring package upgrade to %v", upstreamVersion)
+	} else if newer {
+		s.Status = OutOfDate
+		s.Message = fmt.Sprintf("should be updated to %v", upstreamVersion)
+	} else if upstreamCompleteVersion.Equal(pkgVersion) {
+		s.Status = UpToDate
+		s.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
+	} else {
+		s.Status = Unknown
+		s.Message = fmt.Sprintf("upstream version is %v", upstreamVersion)
+	}
 }
 
 func (status StatusType) color() string {
