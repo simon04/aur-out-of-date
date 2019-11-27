@@ -108,7 +108,7 @@ func main() {
 	}
 
 	if commandline.user != "" {
-		packages, err := aur.SearchByMaintainer(commandline.user)
+		packages, err := aur.SearchBy(commandline.user, aur.Maintainer)
 		handlePackages(commandline.includeVcsPkgs, pkg.NewRemotePkgs(packages), err)
 	} else if commandline.remote {
 		pkgs := flag.Args()
