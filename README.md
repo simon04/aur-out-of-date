@@ -82,7 +82,7 @@ Principle
 
 For each package, the upstream URL and/or source URL is matched against supported platforms. For those platforms the latest release is obtained via an API/HTTP call.
 
-* `github.com` or `github.io` → http://api.github.com/repos/…/…/releases/latest (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITHUB_TOKEN` for [higher request limits](https://developer.github.com/v3/#rate-limiting))
+* `github.com` or `github.io` → http://api.github.com/repos/…/…/releases/latest (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITHUB_TOKEN` for [higher request limits](https://developer.github.com/v3/#rate-limiting); [no scope](https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) needs to be selected when creating the token)
 * `registry.npmjs.org` → https://registry.npmjs.org/-/package/…/dist-tags
 * `pypi.org` or `pypi.io` or `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
 * `search.cpan.org` or `search.mcpan.org` → https://fastapi.metacpan.org/v1/release/…
