@@ -48,6 +48,13 @@ func (s *Status) Compare(upstreamVersion upstream.Version) {
 		return
 	}
 
+	if upstreamVersion.String() == string(pkgVersion.Version) {
+		s.Status = UpToDate
+		s.Message = fmt.Sprintf("matches upstream version %v", upstreamVersion)
+		s.Upstream = upstreamVersion
+		return
+	}
+
 	upstreamCompleteVersion, err := pkgbuild.NewCompleteVersion(upstreamVersion.String())
 	if err != nil {
 		s.Status = Unknown

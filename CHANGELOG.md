@@ -1,6 +1,7 @@
 # Release History
 
 * `-local` excludes VCS packages unless `-devel` is specified
+* Test for version string equality first (e.g., for `pkgver=7.0.0.post3`)
 
 ## 2.2.0 (2019-11-03)
 
