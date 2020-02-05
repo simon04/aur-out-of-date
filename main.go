@@ -122,7 +122,7 @@ func main() {
 			pkgs = pkgs[limit:]
 		}
 	} else if commandline.local {
-		packages, err := pkg.NewLocalPkgs(flag.Args())
+		packages, err := pkg.NewLocalPkgs(flag.Args(), commandline.includeVcsPkgs)
 		handlePackages(false, packages, err)
 		handlePackages(true, packages, err)
 	} else {

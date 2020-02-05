@@ -1,5 +1,7 @@
 # Release History
 
+* `-local` excludes VCS packages unless `-devel` is specified
+
 ## 2.2.0 (2019-11-03)
 
 * Require [Go 1.13](https://golang.org/doc/go1.13)

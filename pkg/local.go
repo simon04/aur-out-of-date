@@ -8,12 +8,15 @@ import (
 )
 
 // NewLocalPkgs creates a Pkg slice from paths to .SRCINFO files.
-func NewLocalPkgs(paths []string) ([]Pkg, error) {
+func NewLocalPkgs(paths []string, includeVcsPkgs bool) ([]Pkg, error) {
 	var r []Pkg
 	for _, path := range paths {
 		pkg, err := pkgbuild.ParseSRCINFO(path)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to parse %s: %w", path, err)
+		}
+		if pkg.IsDevel() && !includeVcsPkgs {
+			continue
 		}
 		r = append(r, &localPkg{pkg, path})
 	}
