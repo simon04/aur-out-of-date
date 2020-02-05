@@ -8,6 +8,8 @@ import (
 type Pkg interface {
 	Name() string
 	Version() *pkgbuild.CompleteVersion
+	// IsVcs checks whether pkg ends in -bzr or -git or -svn
+	IsVcs() bool
 	LocalPKGBUILD() string
 	URL() string
 	Sources() ([]string, error)

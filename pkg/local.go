@@ -37,6 +37,10 @@ func (p *localPkg) Version() *pkgbuild.CompleteVersion {
 	}
 }
 
+func (p *localPkg) IsVcs() bool {
+	return p.pkg.IsDevel()
+}
+
 func (p *localPkg) LocalPKGBUILD() string {
 	return strings.Replace(p.path, ".SRCINFO", "PKGBUILD", 1)
 }

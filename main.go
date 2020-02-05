@@ -63,8 +63,7 @@ func handlePackages(vcsPackages bool, packages []pkg.Pkg, err error) {
 	}
 	sort.Slice(packages, func(i, j int) bool { return strings.Compare(packages[i].Name(), packages[j].Name()) == -1 })
 	for _, pkg := range packages {
-		isVcsPackage := strings.HasSuffix(pkg.Name(), "-bzr") || strings.HasSuffix(pkg.Name(), "-git") || strings.HasSuffix(pkg.Name(), "-hg") || strings.HasSuffix(pkg.Name(), "-svn")
-		if vcsPackages == isVcsPackage {
+		if vcsPackages == pkg.IsVcs() {
 			s := handlePackage(pkg)
 			if commandline.printJSON {
 				s.PrintJSONTextSequence()

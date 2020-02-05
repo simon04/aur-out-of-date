@@ -31,6 +31,13 @@ func (p *remotePkg) Version() *pkgbuild.CompleteVersion {
 	return version
 }
 
+func (p *remotePkg) IsVcs() bool {
+	pkgbuild := pkgbuild.PKGBUILD{
+		Pkgnames: []string{p.Name()},
+	}
+	return pkgbuild.IsDevel()
+}
+
 func (p *remotePkg) LocalPKGBUILD() string {
 	return ""
 }
