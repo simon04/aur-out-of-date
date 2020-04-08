@@ -37,7 +37,7 @@ func (conf *Config) IsIgnored(pkg string, version upstream.Version) bool {
 		return false
 	}
 	for _, v := range ignoredVersions {
-		if v == "*" || v == version {
+		if v == "*" || v.String() == version.String() {
 			return true
 		}
 	}
