@@ -3,10 +3,11 @@ package upstream
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/simon04/aur-out-of-date/pkg"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/simon04/aur-out-of-date/pkg"
 )
 
 // Version represents the upstream version of a software project
@@ -23,15 +24,13 @@ func (v Version) String() string {
 func forURL(url string) (Version, error) {
 	switch {
 	case strings.Contains(url, "github.com"):
-		match := regexp.MustCompile("github.com/([^/#.]+)/([^/#]+)").FindStringSubmatch(url)
-		if len(match) > 0 {
-			return gitHub{match[1], match[2]}.latestVersion()
-		}
+		fallthrough
 	case strings.Contains(url, "github.io"):
-		match := regexp.MustCompile("([^/#.]+).github.io/([^/#]+)").FindStringSubmatch(url)
-		if len(match) > 0 {
-			return gitHub{match[1], match[2]}.latestVersion()
+		g := parseGitHub(url)
+		if g == nil {
+			break
 		}
+		return gitHubAPIReleases{gitHub: *g}.latestVersion()
 	case strings.Contains(url, "registry.npmjs.org"):
 		match := regexp.MustCompile("registry.npmjs.org/((@[^/#.]+/)?[^/#.]+)").FindStringSubmatch(url)
 		if len(match) > 0 {
