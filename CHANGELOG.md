@@ -3,6 +3,7 @@
 * `-local` excludes VCS packages unless `-devel` is specified
 * Test for version string equality first (e.g., for `pkgver=7.0.0.post3`)
 * Alternative GitHub API: set the environment variable `GITHUB_ATOM=1` to use the `…/releases.atom` feed
+* Alternative GitHub API: set the environment variable `GITHUB_TAGS=1` to use obtain the version from the most recent Git tag
 
 ## 2.2.0 (2019-11-03)
 

@@ -33,6 +33,8 @@ func forURL(url string) (Version, error) {
 		}
 		if os.Getenv("GITHUB_ATOM") != "" {
 			return gitHubAPIAtom{gitHub: *g}.latestVersion()
+		} else if os.Getenv("GITHUB_TAGS") != "" {
+			return gitHubAPITags{gitHub: *g}.latestVersion()
 		}
 		return gitHubAPIReleases{gitHub: *g}.latestVersion()
 	case strings.Contains(url, "registry.npmjs.org"):
