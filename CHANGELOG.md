@@ -1,5 +1,7 @@
 # Release History
 
+## 2.4.0 (2020-05-02)
+
 * `-local` excludes VCS packages unless `-devel` is specified
 * Test for version string equality first (e.g., for `pkgver=7.0.0.post3`)
 * Alternative GitHub API: set the environment variable `GITHUB_ATOM=1` to use the `…/releases.atom` feed
