@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
@@ -29,6 +30,9 @@ func forURL(url string) (Version, error) {
 		g := parseGitHub(url)
 		if g == nil {
 			break
+		}
+		if os.Getenv("GITHUB_ATOM") != "" {
+			return gitHubAPIAtom{gitHub: *g}.latestVersion()
 		}
 		return gitHubAPIReleases{gitHub: *g}.latestVersion()
 	case strings.Contains(url, "registry.npmjs.org"):
