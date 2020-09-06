@@ -1,5 +1,7 @@
 # Release History
 
+* Run custom check scripts specified as `scripts` in config
+
 ## 2.4.0 (2020-05-02)
 
 * `-local` excludes VCS packages unless `-devel` is specified

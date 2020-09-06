@@ -90,21 +90,37 @@ For each package, the upstream URL and/or source URL is matched against supporte
 
 ## Configuration
 
-The tool reads a configuration file from `$XDG_CONFIG_HOME/aur-out-of-date/config.json`. This allows to ignore certain package versions from being reported as out-of-date. The string `"*"` acts as a placeholder for all versions.
+The tool reads a configuration file from `$XDG_CONFIG_HOME/aur-out-of-date/config.json`.
 
 ```json
 {
   "ignore": {
     "foo": ["*"],
     "osmtogeojson": ["3.0.0-beta.3", "3.0.0-rc.1"]
+  },
+  "scripts": {
+    "bar": "echo 42",
+    "aurweb": "curl -s https://aur.archlinux.org/ | grep aurweb.git/log | grep -oE 'v[1-9][.0-9]+' | head -n1"
   }
 }
 ```
+
+### Ignoring versions
+
+The `ignore` key configuration file allows to ignore certain package versions from being reported as out-of-date. The string `"*"` acts as a placeholder for all versions.
 
 Running `aur-out-of-date -pkg osmtogeojson` yields:
 
 ```
 [UNKNOWN] [osmtogeojson][3.0.0b3-2] ignoring package upgrade to 3.0.0-beta.3
+```
+
+### Using custom version script
+
+You may specify a custom version script via `scripts`. The given script is executed as `/bin/sh -c $SCRIPT`, and its output is used as upstream version.
+
+```
+[UP-TO-DATE] [bar] Package bar 42-1 matches upstream version 42
 ```
 
 ## Related projects

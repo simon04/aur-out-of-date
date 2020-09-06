@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 
@@ -110,6 +111,17 @@ func VersionForPkg(pkg pkg.Pkg) (Version, error) {
 		return forURL(sources[0])
 	}
 	return "", fmt.Errorf("No release found for %s: %w", pkg.Name(), err)
+}
+
+// VersionForScript runs the script using `sh -c` to determine the upstream version for the given package
+func VersionForScript(script string) (Version, error) {
+	output, err := exec.Command("/bin/sh", "-c", script).Output()
+	if err != nil {
+		return "", fmt.Errorf("Failed to run script `%s`: %w", script, err)
+	}
+	v := string(output)
+	v = strings.TrimSpace(v)
+	return Version(v), nil
 }
 
 type releasesAPI interface {

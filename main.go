@@ -34,6 +34,13 @@ var commandline struct {
 	updatePKGBUILD  bool
 }
 
+func version(pkg pkg.Pkg) (upstream.Version, error) {
+	if script, ok := conf.Scripts[pkg.Name()]; ok {
+		return upstream.VersionForScript(script)
+	}
+	return upstream.VersionForPkg(pkg)
+}
+
 func handlePackage(pkg pkg.Pkg) status.Status {
 
 	pkgVersion := pkg.Version()
@@ -43,7 +50,7 @@ func handlePackage(pkg pkg.Pkg) status.Status {
 		Version:          pkgVersion.String(),
 	}
 
-	upstreamVersion, err := upstream.VersionForPkg(pkg)
+	upstreamVersion, err := version(pkg)
 	if err != nil {
 		s.Status = status.Unknown
 		s.Message = err.Error()

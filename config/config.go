@@ -9,7 +9,8 @@ import (
 
 // Config contains options for running aur-out-of-date
 type Config struct {
-	Ignore map[string]([]upstream.Version) `json:"ignore"`
+	Ignore  map[string]([]upstream.Version) `json:"ignore"`
+	Scripts map[string]string               `json:"scripts"`
 }
 
 // FromFile reads the config from the given filename
