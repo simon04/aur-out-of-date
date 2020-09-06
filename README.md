@@ -1,10 +1,8 @@
-aur-out-of-date
-==========
+# aur-out-of-date
 
 Iterates through a user's AUR (Arch User Repository) packages, and determines out-of-date packages w.r.t. their upstream version.
 
-Installation
-------------
+## Installation
 
 ```sh
 $ go get github.com/simon04/aur-out-of-date
@@ -14,8 +12,7 @@ Since modern Go features (such as modules) are used, at least [Go 1.13](https://
 
 The tool is also available in AUR: [aur-out-of-date](https://aur.archlinux.org/packages/aur-out-of-date/)
 
-Usage
------
+## Usage
 
 ```
 $ aur-out-of-date
@@ -77,23 +74,21 @@ The option `-flag` flags out-of-date packages on AUR after a user prompt: "Shoul
 
 The tool `aur-out-of-date` exists with code `4` if at least one out-of-date package has been found.
 
-Principle
----------
+## Principle
 
 For each package, the upstream URL and/or source URL is matched against supported platforms. For those platforms the latest release is obtained via an API/HTTP call.
 
-* `github.com` or `github.io`
-* * → https://github.com/…/…/releases.atom if the environment variable `GITHUB_ATOM` is nonempty.
-* * → http://api.github.com/repos/…/…/releases/latest (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITHUB_TOKEN` for [higher request limits](https://developer.github.com/v3/#rate-limiting); [no scope](https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) needs to be selected when creating the token)
-* * → http://api.github.com/repos/…/…/tags if the environment variable `GITHUB_TAGS` is nonempty (request limits applies).
-* `registry.npmjs.org` → https://registry.npmjs.org/-/package/…/dist-tags
-* `pypi.org` or `pypi.io` or `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
-* `search.cpan.org` or `search.mcpan.org` → https://fastapi.metacpan.org/v1/release/…
-* `rubygems.org` or `gems.rubyforge.org` → https://rubygems.org/api/v1/versions/….json
-* `gitlab.com` or any self-hosted GitLab instance → http://gitlab.com/api/v4/…/…/repository/tags (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITLAB_TOKEN` for [higher request limits](https://docs.gitlab.com/ee/api/#oauth2-tokens))
+- `github.com` or `github.io`
+- - → https://github.com/…/…/releases.atom if the environment variable `GITHUB_ATOM` is nonempty.
+- - → http://api.github.com/repos/…/…/releases/latest (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITHUB_TOKEN` for [higher request limits](https://developer.github.com/v3/#rate-limiting); [no scope](https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) needs to be selected when creating the token)
+- - → http://api.github.com/repos/…/…/tags if the environment variable `GITHUB_TAGS` is nonempty (request limits applies).
+- `registry.npmjs.org` → https://registry.npmjs.org/-/package/…/dist-tags
+- `pypi.org` or `pypi.io` or `pypi.python.org` or `files.pythonhosted.org` → https://pypi.python.org/pypi/…/json
+- `search.cpan.org` or `search.mcpan.org` → https://fastapi.metacpan.org/v1/release/…
+- `rubygems.org` or `gems.rubyforge.org` → https://rubygems.org/api/v1/versions/….json
+- `gitlab.com` or any self-hosted GitLab instance → http://gitlab.com/api/v4/…/…/repository/tags (provide a [personal access token](https://github.com/settings/tokens) in the environment variable `GITLAB_TOKEN` for [higher request limits](https://docs.gitlab.com/ee/api/#oauth2-tokens))
 
-Configuration
--------------
+## Configuration
 
 The tool reads a configuration file from `$XDG_CONFIG_HOME/aur-out-of-date/config.json`. This allows to ignore certain package versions from being reported as out-of-date. The string `"*"` acts as a placeholder for all versions.
 
@@ -112,14 +107,11 @@ Running `aur-out-of-date -pkg osmtogeojson` yields:
 [UNKNOWN] [osmtogeojson][3.0.0b3-2] ignoring package upgrade to 3.0.0-beta.3
 ```
 
+## Related projects
 
-Related projects
-----------------
+- https://github.com/repology/repology
+- https://github.com/lilydjwg/nvchecker
 
-* https://github.com/repology/repology
-* https://github.com/lilydjwg/nvchecker
-
-License
--------
+## License
 
 GNU General Public License v3.0
