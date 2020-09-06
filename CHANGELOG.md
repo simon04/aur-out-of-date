@@ -1,5 +1,7 @@
 # Release History
 
+## 3.0.0 (2020-09-06)
+
 - Run custom check scripts specified as `scripts` in config
 
 ## 2.4.0 (2020-05-02)
