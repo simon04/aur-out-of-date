@@ -1,5 +1,9 @@
 # Release History
 
+## 3.1.0 (2021-03-16)
+
+- Support `b2sums` ([BLAKE2](https://en.wikipedia.org/wiki/BLAKE_(hash_function)#BLAKE2) checksums), ref [#40](https://github.com/simon04/aur-out-of-date/issues/40)
+
 ## 3.0.0 (2020-09-06)
 
 - Run custom check scripts specified as `scripts` in config
