@@ -43,8 +43,10 @@ func (g *gitea) latestVersion() (Version, error) {
 	if err != nil {
 		return "", err
 	}
-	if releases[0].TagName != "" {
-		return Version(releases[0].TagName), nil
+	for _, release := range releases {
+		if !release.Prerelease && !release.Draft {
+			return Version(release.TagName), nil
+		}
 	}
 	return "", fmt.Errorf("No Gitea tag found for %s", g)
 }
