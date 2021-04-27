@@ -1,5 +1,9 @@
 # Release History
 
+## 3.2.0 (2021-04-27)
+
+- Add codeberg.org support, ref [#42](https://github.com/simon04/aur-out-of-date/pull/42) by [@jugendhacker](https://github.com/jugendhacker)
+
 ## 3.1.0 (2021-03-16)
 
 - Support `b2sums` ([BLAKE2](https://en.wikipedia.org/wiki/BLAKE_(hash_function)#BLAKE2) checksums), ref [#40](https://github.com/simon04/aur-out-of-date/issues/40)
