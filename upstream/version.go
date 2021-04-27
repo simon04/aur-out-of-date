@@ -93,6 +93,12 @@ func forURL(url string) (Version, error) {
 		if len(match) > 0 {
 			return debian(match[1]).latestVersion()
 		}
+	case strings.Contains(url, "codeberg.org"):
+		g := parseGitea("codeberg.org", url)
+		if g == nil {
+			break
+		}
+		return g.latestVersion()
 	}
 	return "", fmt.Errorf("No release found for %s", url)
 }
