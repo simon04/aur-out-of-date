@@ -2,6 +2,8 @@
 
 Iterates through a user's AUR (Arch User Repository) packages, and determines out-of-date packages w.r.t. their upstream version.
 
+⚠️ [Leaving Arch Linux](https://lists.archlinux.org/pipermail/aur-general/2021-November/036683.html) in November 2021 – I'll keep maintaining the project, but don't expect new features unless _you_ are submitting a patch.
+
 ## Installation
 
 ```sh
